@@ -95,7 +95,8 @@ echo.
 echo ==================================
 echo  Next steps:
 echo   1. Place your data files in data\formats\, data\mapping_sets\, data\functions_docs\
-echo   2. Run the server: run.bat
+echo   2. Run the server: run.bat 8000 --reindex       (first time, indexes all files)
+echo      Subsequent runs: run.bat 8000 --no-reindex   (skip indexing, fast startup)
 echo   3. Run tests: .venv\Scripts\activate ^& pytest tests\ -v
 echo ==================================
 

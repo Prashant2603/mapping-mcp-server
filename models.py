@@ -30,8 +30,15 @@ class MappingSetDetail(BaseModel):
     metadata: dict
 
 
+class FullFileContent(BaseModel):
+    file_path: str
+    content: str
+
+
 class MappingContext(BaseModel):
-    relevant_formats: list[SearchResult]
-    similar_mapping_sets: list[SearchResult]
+    source_format_query: str
+    target_format_query: str
+    reference_mapping_sets: list[FullFileContent]
+    format_definitions: list[FullFileContent]
     relevant_functions: list[SearchResult]
     xml_skeleton: str

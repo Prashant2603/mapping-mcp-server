@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mappingSet>
+    <id>SettlementMessageRequestV4_to_pain.001.001.02</id>
+    <sourceFormat>SettlementMessageRequestV4</sourceFormat>
+    <targetFormat>pain.001.001.02</targetFormat>
+    <flag>32</flag>
+    <multiResults>false</multiResults>
+    <multiRequests>true</multiRequests>
+    <description>v20210520_1818 SettlementMessageRequestV4 to pain.001.001.02 outbound message</description>
+    <trackingCode>mkv_20210520_1818</trackingCode>
+    <trackingId>u2r6p</trackingId>
+    <tenantId>ALL</tenantId>
+    <factory>false</factory>
+    <mapping>
+        <description>SMR_V4 Loop formatting to match Target Message Format Looping structure </description>
+        <target>$Format.PmtInfLevel</target>
+        <function>createLoop_1</function>
+        <flags>0</flags>
+        <parameter>1</parameter>
+    </mapping>
+    <mapping>
+        <description>SMR_V4 Loop formatting to match Target Message Format Looping structure </description>
+        <target>$Format.PmtInfLevel.MultiSettlements</target>
+        <function>union</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests</parameter>
+    </mapping>
+    <mapping>
+        <description>Concatenated string – represents unique Message identification Sender/BulkingGroupId if defined, else MessageId</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.MsgId</target>
+        <function>concat</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Sender</parameter>
+        <parameter>/</parameter>
+        <parameter>$MultiRequests[0].Metadata.MsgIdIdentifier</parameter>
+    </mapping>
+    <mapping>
+        <description>System generated date - current Date</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.CreDtTm</target>
+        <function>getCurrentDate_1</function>
+        <flags>0</flags>
+        <parameter>yyyy-MM-dd'T'HH:mm:ss</parameter>
+    </mapping>
+    <mapping>
+        <description>Count the number of requests in one Bulk</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.NbOfTxs</target>
+        <function>getSize_1</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests</parameter>
+    </mapping>
+    <mapping>
+        <description>Sum of all Cash Amounts from requests from one Bulk </description>
+        <target>$MultiRequests.Format.Settlement.CtrlSumCalculated</target>
+        <function>sum_1</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests.Format.Settlement.Cash.Amount</parameter>
+    </mapping>
+    <mapping>
+        <description>It provides Calculated Amount of all Requests from the Bulk. It Formats Decimal precision according to Cash currency.</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.CtrlSum</target>
+        <function>formatAmount_4</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Cash.Currency</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.CtrlSumCalculated</parameter>
+        <parameter>False</parameter>
+        <parameter>.</parameter>
+    </mapping>
+    <mapping>
+        <description>Set Default value to MIXD</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.Grpg</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>MIXD</parameter>
+    </mapping>
+    <mapping>
+        <description>Corresponds to Debtor - Identification by Name</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.InitgPty.Nm</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.PartyDetails.PartyName</parameter>
+    </mapping>
+    <mapping>
+        <description>Value Date</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.ReqdExctnDt</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Cash.DateSettlement</parameter>
+    </mapping>
+    <mapping>
+        <description>Set Default value to TRF</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.PmtMtd</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>TRF</parameter>
+    </mapping>
+    <mapping>
+        <description>Debtor - Identification by Name</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.Dbtr.Nm</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.PartyDetails.PartyName</parameter>
+    </mapping>
+    <mapping>
+        <description>The value should be mapped from Settlement Method during implementation, if relevant </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.PmtTpInf.PmtTpInf.PmtTpInf1.SvcLvl.SvcLvl1.Cd</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.SettlementMethod</parameter>
+    </mapping>
+    <mapping>
+        <description>Debtor - Identification by Country</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.Dbtr.CtryOfRes</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.PartyDetails.Country</parameter>
+    </mapping>
+    <mapping>
+        <description>Corresponds to Debtor - Identification by Country</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.InitgPty.CtryOfRes</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.PartyDetails.Country</parameter>
+    </mapping>
+    <mapping>
+        <description>Group Debtor Account – IBAN type or other IDs</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.DbtrAcct.Id.Id1.IBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Group Debtor Account – IBAN type or other IDs</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.DbtrAcct.Id.Id2.BBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Group Debtor Account – Account currency</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.DbtrAcct.Ccy</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.Beneficiary.AccountDetails.AccountCurrency</parameter>
+    </mapping>
+    <mapping>
+        <description>Our Bank – Identification by BIC</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.DbtrAgt.FinInstnId.FinInstnId1.BIC</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.BeneficiaryAgent.IdentificationDetails.BICDetails.BIC</parameter>
+    </mapping>
+    <mapping>
+        <description>Forwarding End to End reference</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.PmtId.EndToEndId</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.PaymentIdentification.EndToEndId</parameter>
+    </mapping>
+    <mapping>
+        <description>Group Cash Amount – formatted by currency</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.Amt.Amt1.InstdAmt.InstdAmt</target>
+        <function>formatAmount_4</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Cash.Currency</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Cash.Amount</parameter>
+        <parameter>False</parameter>
+        <parameter>.</parameter>
+    </mapping>
+    <mapping>
+        <description>Group Cash Amount - currency</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.Amt.Amt1.InstdAmt.Ccy</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Cash.Currency</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Their Bank - BIC identifier from downstream system</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.CdtrAgt.FinInstnId.FinInstnId1.BIC</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.IdentificationDetails.BICDetails.BIC</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Counterparty Name from downstream system </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.Cdtr.Nm</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.PartyDetails.PartyName</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Counterparty Address from downstream system </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.Cdtr.PstlAdr.StrtNm</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.PostalAddress.StreetName</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Counterparty Address from downstream system </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.Cdtr.PstlAdr.PstCd</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.PostalAddress.PostCode</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Counterparty Address from downstream system </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.Cdtr.PstlAdr.TwnNm</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.PostalAddress.TownName</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Counterparty Address from downstream system </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.Cdtr.PstlAdr.Ctry</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.PostalAddress.Country</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Counterparty Account from downstream system </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.CdtrAcct.Id.Id1.IBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Counterparty Address from downstream system </description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumberTypeNotIBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT EQUAL TO</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>SMR_V4 Loop formatting to match Target Message Format Looping structure </description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.RemittanceInformation.LoopUnstructured</target>
+        <function>createLoop_1</function>
+        <flags>0</flags>
+        <parameter>1</parameter>
+    </mapping>
+    <mapping>
+        <description>SMR_V4 Loop formatting to match Target Message Format Looping structure </description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.RemittanceInformation.LoopUnstructured.Ustrd</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.RemittanceInformation.Unstructured</parameter>
+    </mapping>
+    <mapping>
+        <description>Group One-off: Forwarding Remmitance info from downstream system </description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.RmtInf.MultiUstrd.Ustrd</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.RemittanceInformation.LoopUnstructured.Ustrd</parameter>
+    </mapping>
+    <mapping>
+        <description>Batch Identifier: Bulk ID for Bulked message. EndtoEndId for single payment message.</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.PmtInfId</target>
+        <function>ifThenElse</function>
+        <flags>0</flags>
+        <parameter>DEFINED</parameter>
+        <parameter>$MultiRequests[0].Metadata.BulkingGroupId</parameter>
+        <parameter>$MultiRequests[0].Metadata.BulkingGroupId</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.PaymentIdentification.EndToEndId</parameter>
+    </mapping>
+    <mapping>
+        <target>Format.pain\.001\.001\.02.GrpHdr.BtchBookg</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Batch.BatchBooking</parameter>
+        <parameter>1</parameter>
+        <parameter>true</parameter>
+    </mapping>
+    <mapping>
+        <target>Metadata.MessageReferenceId</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>#Format.pain\.001\.001\.02.GrpHdr.MsgId</parameter>
+    </mapping>
+    <mapping>
+        <description>Copy BulkingGroupId if defined, else MessageId</description>
+        <target>$MultiRequests[0].Metadata.MsgIdIdentifier</target>
+        <function>selectNotEmpty</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Metadata.BulkingGroupId</parameter>
+        <parameter>$MultiRequests[0].Metadata.MessageId</parameter>
+    </mapping>
+    <mapping>
+        <description>Simple Copy</description>
+        <target>Metadata.Sender</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Sender</parameter>
+    </mapping>
+    <mapping>
+        <description>Use Forwarding Agent BIC if present, else receiver (Entity Agent) BIC</description>
+        <target>Metadata.Receiver</target>
+        <function>selectNotEmpty</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.ForwardingAgent.IdentificationDetails.BICDetails.BIC</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Receiver</parameter>
+    </mapping>
+    <mapping>
+        <description>if Account Number Type is not defined, use  Account Number</description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumberTypeNotDefined</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT DEFINED</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumberType</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Copy Account Number to BBAN if Account Type not IBAN or not defined</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.CdtrAcct.Id.Id2.BBAN</target>
+        <function>selectNotEmpty</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumberTypeNotIBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Beneficiary.AccountDetails.AccountNumberTypeNotDefined</parameter>
+    </mapping>
+    <mapping>
+        <description>Simple Copy</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.IntrmyAgt1.FinInstnId.FinInstnId1.BIC</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.IdentificationDetails.BICDetails.BIC</parameter>
+    </mapping>
+    <mapping>
+        <description>Simple copy</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.DbtrAgt.FinInstnId.FinInstnId2.ClrSysMmbId.ClrSysMmbId1.Id</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.BeneficiaryAgent.IdentificationDetails.ClearingType.ClearingCode</parameter>
+    </mapping>
+    <mapping>
+        <description>Simple Copy of first record</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.IntrmyAgt1.FinInstnId.FinInstnId2.ClrSysMmbId.ClrSysMmbId1.Id</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.IdentificationDetails.ClearingType.ClearingCode</parameter>
+    </mapping>
+    <mapping>
+        <description>Simple copy</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.CdtrAgt.FinInstnId.FinInstnId2.ClrSysMmbId.ClrSysMmbId1.Id</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.IdentificationDetails.ClearingType.ClearingCode</parameter>
+    </mapping>
+    <mapping>
+        <description>Copy if Debtor Agent Account Number Type is IBAN</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.DbtrAgtAcct.Id.Id1.IBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.BeneficiaryAgent.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.BeneficiaryAgent.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Copy if Debtor Agent Account Type is not IBAN</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.DbtrAgtAcct.Id.Id2.BBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.BeneficiaryAgent.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.BeneficiaryAgent.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Copy if Creditor Agent Account Type is IBAN</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.CdtrAgtAcct.Id.Id1.IBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Populate if Creditor Account Number Type is not IBAN</description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumberTypeNotIBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT EQUAL TO</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Populate if Creditor Agent Account Number Type is not defined</description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumberTypeNotDefined</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT DEFINED</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumberType</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Populate if Creditor Agent Account Number Type is not IBAN or not defined</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.CdtrAgtAcct.Id.Id2.BBAN</target>
+        <function>selectNotEmpty</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumberTypeNotIBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.BeneficiaryAgent.AccountDetails.AccountNumberTypeNotDefined</parameter>
+    </mapping>
+    <mapping>
+        <description>Populate if Creditor Intermediary Agent1 Account Number Type is IBAN</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.IntrmyAgt1Acct.Id.Id1.IBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Populate if Creditor Intermediary Agent 1 Account Number Type is not IBAN</description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumberTypeNotIBAN</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT EQUAL TO</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumberType</parameter>
+        <parameter>IBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Populate if Intermediary Agent 1 Account Number Type is not defined</description>
+        <target>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumberTypeNotDefined</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>NOT DEFINED</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumberType</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumber</parameter>
+    </mapping>
+    <mapping>
+        <description>Populate if Intermediary Agent 1 Account Number Type is not IBAN or not defined</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.MultiCdtTrfTxInf.CdtTrfTxInf.IntrmyAgt1Acct.Id.Id2.BBAN</target>
+        <function>selectNotEmpty</function>
+        <flags>0</flags>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumberTypeNotIBAN</parameter>
+        <parameter>$Format.PmtInfLevel.MultiSettlements.MultiRequests.Format.Settlement.Counterparty.Intermediary1.AccountDetails.AccountNumberTypeNotDefined</parameter>
+    </mapping>
+    <mapping>
+        <description>Resolve Charge Bearer Code</description>
+        <target>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.SHAR</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ChargeBearer</parameter>
+        <parameter>Shared</parameter>
+        <parameter>SHAR</parameter>
+    </mapping>
+    <mapping>
+        <description>Resolve Charge Bearer Code</description>
+        <target>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.CRED</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ChargeBearer</parameter>
+        <parameter>Creditor</parameter>
+        <parameter>CRED</parameter>
+    </mapping>
+    <mapping>
+        <description>Resolve Charge Bearer Code</description>
+        <target>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.DEBT</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ChargeBearer</parameter>
+        <parameter>Debtor</parameter>
+        <parameter>DEBT</parameter>
+    </mapping>
+    <mapping>
+        <description>Resolve Charge Bearer Code</description>
+        <target>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.SLEV</target>
+        <function>ifThen</function>
+        <flags>0</flags>
+        <parameter>EQUAL TO</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ChargeBearer</parameter>
+        <parameter>Service-Level-Defined</parameter>
+        <parameter>SLEV</parameter>
+    </mapping>
+    <mapping>
+        <description>Copy resolved Charge Bearer Code</description>
+        <target>Format.pain\.001\.001\.02.MultiPmtInf.PmtInf.ChrgBr</target>
+        <function>selectNotEmpty</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.SHAR</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.CRED</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.DEBT</parameter>
+        <parameter>$MultiRequests[0].Format.Settlement.Charges.ConvertToISO.SLEV</parameter>
+    </mapping>
+    <mapping>
+        <description>Simple Copy</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.FwdgAgt.FinInstnId.FinInstnId1.BIC</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.ForwardingAgent.IdentificationDetails.BICDetails.BIC</parameter>
+    </mapping>
+    <mapping>
+        <description>Simple Copy</description>
+        <target>Format.pain\.001\.001\.02.GrpHdr.FwdgAgt.FinInstnId.FinInstnId2.ClrSysMmbId.ClrSysMmbId1.Id</target>
+        <function>copy</function>
+        <flags>0</flags>
+        <parameter>$MultiRequests[0].Format.Settlement.Entity.ForwardingAgent.IdentificationDetails.ClearingType.ClearingCode</parameter>
+    </mapping>
+</mappingSet>
+

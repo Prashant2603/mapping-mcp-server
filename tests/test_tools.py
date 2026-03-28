@@ -3,6 +3,7 @@
 import pytest
 
 from mcp_server import (
+    find_relevant_mapping_set,
     generate_mapping_context,
     get_mapping_set_details,
     init_rag,
@@ -49,7 +50,6 @@ def test_list_mapping_sets():
 
 def test_list_mapping_sets_source_target():
     result = list_mapping_sets()
-    # Sample mapping has source="FormatA" target="FormatB"
     mapping = result[0]
     assert "FormatA" in mapping["source_target_info"]
     assert "FormatB" in mapping["source_target_info"]
@@ -58,9 +58,9 @@ def test_list_mapping_sets_source_target():
 def test_get_mapping_set_details():
     result = get_mapping_set_details("mapping_sets/sample_mapping.xml")
     assert "raw_content" in result
-    assert "MappingSet" in result["raw_content"]
-    assert result["metadata"].get("source") == "FormatA"
-    assert result["metadata"].get("target") == "FormatB"
+    assert "mappingSet" in result["raw_content"]
+    assert result["metadata"].get("sourceFormat") == "FormatA"
+    assert result["metadata"].get("targetFormat") == "FormatB"
 
 
 def test_search_docs():
@@ -92,15 +92,44 @@ def test_search_functions():
         assert item["source_type"] == "functions_doc"
 
 
+def test_find_relevant_mapping_set():
+    result = find_relevant_mapping_set(query="FormatA to FormatB")
+    assert isinstance(result, list)
+    assert len(result) >= 1
+    item = result[0]
+    assert "file_path" in item
+    assert "source_format" in item
+    assert "target_format" in item
+    assert "relevance_score" in item
+    assert item["source_format"] == "FormatA"
+    assert item["target_format"] == "FormatB"
+
+
 def test_generate_mapping_context():
     result = generate_mapping_context(
         source_format="FormatA",
         target_format="FormatB",
         description="convert orders",
     )
-    assert "relevant_formats" in result
-    assert "similar_mapping_sets" in result
+    assert "reference_mapping_sets" in result
+    assert "format_definitions" in result
     assert "relevant_functions" in result
     assert "xml_skeleton" in result
+    assert "source_format_query" in result
+    assert result["source_format_query"] == "FormatA"
+    assert result["target_format_query"] == "FormatB"
     assert "FormatA" in result["xml_skeleton"]
     assert "FormatB" in result["xml_skeleton"]
+
+
+def test_generate_mapping_context_returns_full_content():
+    result = generate_mapping_context(
+        source_format="FormatA",
+        target_format="FormatB",
+    )
+    # reference_mapping_sets should contain full file content, not just snippets
+    for ms in result["reference_mapping_sets"]:
+        assert "file_path" in ms
+        assert "content" in ms
+        # Content should be the full XML, not a chunk snippet
+        assert "mappingSet" in ms["content"]

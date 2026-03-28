@@ -23,8 +23,8 @@ def data_dir(tmp_path):
     (formats / "sample_format.xml").write_text(
         '<?xml version="1.0"?>\n'
         '<Schema name="SampleFormat" type="input">\n'
-        "  <Field name=\"order_id\" type=\"string\"/>\n"
-        "  <Field name=\"date\" type=\"date\"/>\n"
+        '  <Field name="order_id" type="string"/>\n'
+        '  <Field name="date" type="date"/>\n'
         "</Schema>"
     )
 
@@ -33,17 +33,27 @@ def data_dir(tmp_path):
         "product_id,name,price\n" "1,Widget,9.99\n" "2,Gadget,19.99\n"
     )
 
-    # Sample mapping set
+    # Sample mapping set — uses child elements for source/target (matches real data)
     (mapping_sets / "sample_mapping.xml").write_text(
         '<?xml version="1.0"?>\n'
-        '<MappingSet name="SampleMapping" source="FormatA" target="FormatB" version="1.0">\n'
-        '  <MappingRule source_path="/order/id" target_path="/purchase/order_number">\n'
-        '    <Function name="substring" params="input=$source, start=0, length=10"/>\n'
-        "  </MappingRule>\n"
-        '  <MappingRule source_path="/order/date" target_path="/purchase/date">\n'
-        '    <Function name="formatDate" params="input=$source, inputFormat=YYYYMMDD, outputFormat=MM/DD/YYYY"/>\n'
-        "  </MappingRule>\n"
-        "</MappingSet>"
+        "<mappingSet>\n"
+        "  <id>FormatA_to_FormatB</id>\n"
+        "  <sourceFormat>FormatA</sourceFormat>\n"
+        "  <targetFormat>FormatB</targetFormat>\n"
+        "  <description>Sample mapping from FormatA to FormatB</description>\n"
+        "  <mapping>\n"
+        "    <description>Map order ID</description>\n"
+        "    <target>/purchase/order_number</target>\n"
+        '    <function>substring</function>\n'
+        "    <parameter>input=$source, start=0, length=10</parameter>\n"
+        "  </mapping>\n"
+        "  <mapping>\n"
+        "    <description>Map order date</description>\n"
+        "    <target>/purchase/date</target>\n"
+        '    <function>formatDate</function>\n'
+        "    <parameter>input=$source, inputFormat=YYYYMMDD, outputFormat=MM/DD/YYYY</parameter>\n"
+        "  </mapping>\n"
+        "</mappingSet>"
     )
 
     # Sample function docs
@@ -80,5 +90,5 @@ def rag_index(data_dir):
             collection_name="test_collection",
         )
         index = RAGIndex(s)
-        index.index_all()
+        index.index_all(incremental=False)
         yield index

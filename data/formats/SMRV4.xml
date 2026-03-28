@@ -1,0 +1,3426 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xmlFormatMetadata>
+    <name>SettlementMessageRequestV4</name>
+    <messageType>SettlementMessageRequest</messageType>
+    <version>04</version>
+	<factory>true</factory>
+    <schemaDefinitions>
+        <schemaDefinition><![CDATA[<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:complexType name="BICDetailsType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="BIC" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Business Identifier Code. Code allocated to a financial institution by the ISO.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="BICCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>First 8-character code of the BIC, consisting of the business party prefix (4 alphanumeric), the country code as defined in ISO 3166-1 (2 alphabetic), and the business party suffix (2 alphanumeric).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="BranchCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>3-character optional element that can supplement the 8-character BIC code, used to identify specific locations, departments, services, or units of the same business party.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ClearingType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="ClearingCodeFormat" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identification of a clearing system, in a coded form as published in an external list.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="ClearingCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identification of a member of a clearing system.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OrganisationIdentification">
+		<xs:sequence>
+			<xs:element type="xs:string" name="Code" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Organisation code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Value" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Organisation value.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PrivateIdentification">
+		<xs:sequence>
+			<xs:element name="BirthDetails" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date and place of birth of a person.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="Date" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Date on which a person is born.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element type="xs:string" name="City" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>City where a person was born.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element type="xs:string" name="Province" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Province where a person was born.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element type="xs:string" name="Country" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Country where a person was born.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Other" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unique identification of a person, as assigned by an institution, using an identification scheme.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="Code" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Other private identification code.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element type="xs:string" name="Value" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Other private identification value.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IdentificationDetailsType">
+		<xs:sequence>
+			<xs:element name="BICDetails" type="BICDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Business Identifier Code (BIC) details.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LegalEntity" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Legal entity identifier of the financial institution (LEI).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ClearingType" type="ClearingType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information used to identify a member within a clearing system.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrganisationIdentification" type="OrganisationIdentification" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identification assigned by an institution.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PrivateIdentification" type="PrivateIdentification" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unique and unambiguous identification of a person, for example a passport.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PartyDetailsType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="PartyName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name by which a party is known, and which is usually used to identify that party.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="PartyShortName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>(Short) name by which a party is known, and which is usually used to identify that party.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Country" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Country in which the entity is located.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="FunctionalCurrency" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Currency of the entity.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="PartyRole" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Role of the entity in the SSI of the transaction like beneficiary, account with bank, intermediary, and so on.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="CoverPaymentRole" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Role of the entity in the SSI for a cover payment like MT103 receiver.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AccountDetailsType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="AccountNumberType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is the type of the Account Number: IBAN, BBAN,</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AccountNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Number of the bank account.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AccountName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the bank account.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AccountCurrency" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Currency of the bank account.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AccountComment" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Any comment about the bank account.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProxyAccount" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The original account.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="AccountNumberType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Original type of the bank account number, linked to the alias account type (AccountDetailsType.AccountNumberType). Also known as account mapping.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element type="xs:string" name="AccountNumber" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Original bank account number linked to the alias account number (AccountDetailsType.AccountNumber). Also known as account mapping.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AddressType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="AddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifies the nature of the postal address.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Department" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identification of a division of a large organisation or building.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="SubDepartment" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identification of a sub-division of a large organisation or building.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="StreetName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of a street or thoroughfare.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="BuildingNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Number that identifies the position of a building on a street.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="BuildingName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the building or house.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Floor" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Floor or storey within a building.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="PostBox" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Room" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Building room number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="PostCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="TownName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of a built-up area, with defined boundaries, and a local government.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="TownLocationName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specific location name within the town.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="DistrictName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifies a subdivision within a country sub-division.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="CountrySubDivision" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifies a subdivision of a country such as state, region, county.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Country" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Nation with its own government.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AddressLine1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information that locates and identifies a specific address, as defined by postal services, presented in free format text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AddressLine2" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information that locates and identifies a specific address, as defined by postal services, presented in free format text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AddressLine3" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information that locates and identifies a specific address, as defined by postal services, presented in free format text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AddressLine4" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information that locates and identifies a specific address, as defined by postal services, presented in free format text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AddressLine5" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information that locates and identifies a specific address, as defined by postal services, presented in free format text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AddressLine6" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information that locates and identifies a specific address, as defined by postal services, presented in free format text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="AddressLine7" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information that locates and identifies a specific address, as defined by postal services, presented in free format text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactDetailsType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="NamePrefix" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the terms used to formally address a person.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Name" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name by which a party is known and which is usually used to identify that party.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="PhoneNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Collection of information that identifies a phone number, as defined by telecom services.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="MobileNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Collection of information that identifies a mobile phone number, as defined by telecom services.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="FaxNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Collection of information that identifies a FAX number, as defined by telecom services.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="EmailAddress" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Address for electronic mail (e-mail).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="EmailPurpose" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Purpose for which an email address may be used.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="JobTitle" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Title of the function.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Responsibility" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Role of a person in an organisation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element type="xs:string" name="Department" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identification of a division of a large organisation or building.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Other" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Contact details in another form.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="ChannelType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Method used to contact the financial institution’s contact for the specific tax region.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element type="xs:string" name="Identification" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Communication value such as phone number or email address.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element type="xs:string" name="PreferredMethod" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Preferred method used to reach the contact.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EntityType" mixed="true">
+		<xs:sequence>
+			<xs:element name="PartyDetails" type="PartyDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information specific to the individual or organisation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IdentificationDetails" type="IdentificationDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unique and unambiguous identification of the individual or organizaton.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AccountDetails" type="AccountDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account details for the individual or organizaton.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalAddress" type="AddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Postal address information for the individual or organizaton.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ContactDetails" type="ContactDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Set of elements used to indicate how to contact the individual or organisation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EntityAgentType" mixed="true">
+		<xs:sequence>
+			<xs:element name="PartyDetails" type="PartyDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Information specific to the individual or organisation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IdentificationDetails" type="IdentificationDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unique and unambiguous identification of the individual or organizaton.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AccountDetails" type="AccountDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account details for the individual or organizaton.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalAddress" type="AddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Postal address information for the  individual or organizaton.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Settlement">
+		<xs:annotation>
+			<xs:documentation>Settlement message request version 4</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Function" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Indicator of the type of operation requested by the source ION component.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="MessageId" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Business message identifier of the message assigned by the consumer ION component.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="MessageType">
+					<xs:annotation>
+						<xs:documentation>Indicates the type of message that should be generated by the request.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Sender" type="EntityType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>This is the business sender of the message.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Receiver" type="EntityType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>This is the business receiver of the message.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="SettlementMethod">
+					<xs:annotation>
+						<xs:documentation>Indicates how the settlement should be performed. Standard values are:
+- DRAFT (cheque)
+- INTERNAL (in-house internal messages)
+- TARGET
+- SEPA
+- NO_SETTLEMENT
+- SWIFT
+- TBA (to be amended)
+- CLS (Continuous Linked Settlement)
+- OUTSIDE</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CoverPayment" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Cover Payment flag
+1 - eligible for cover payment
+0 - not eligible for cover payment.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="0"/>
+							<xs:enumeration value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Batch" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Represents a group of interrelated transactions.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BatchId" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>This ID identifies the batch</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="BatchBooking" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Batch booking flag
+1 - eligible for batch booking
+0 - not eligible for batch booking. 
+Determines whether the receving bank should consider the batch transactions as a single transaction or separate transactions.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Entity">
+					<xs:annotation>
+						<xs:documentation>"Our" side of the operation. Contains the parties that are on "our" side of the settlement.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Beneficiary" type="EntityType">
+								<xs:annotation>
+									<xs:documentation>Payments/receipts: Party that owes an amount of money to the (ultimate) creditor.
+Direct debits: Party that is owed money by the (ultimate) debtor.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="BeneficiaryAgent" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Financial institution servicing an account for the beneficiary.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Intermediary1" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Agent between the entity beneficiary's agent and the counterparty beneficiary's agent.
+Usage: If more than one intermediary agent is present, then IntermediaryAgent1 identifies the agent between the Entity beneficiary Agent and the Entity Intermediary2.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Intermediary2" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Agent between the entity beneficiary's agent and the counterparty beneficiary's agent.
+Usage: If more than two intermediary agents are present, then Intermediary2 identifies the agent between the Intermediary1 and the Intermediary3.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Intermediary3" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Agent between the entity beneficiary's agent and the counterparty beneficiary's agent.
+Usage: If IntermediaryAgent3 is present, then it identifies the agent between the IntermediaryAgent 2 and the Counterparty BeneficiaryAgent.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Ultimate" type="EntityType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Payments/receipts: Ultimate party that owes an amount of money to the (ultimate) creditor.
+Direct debits: Ultimate party that is owed money by the (ultimate) debtor.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ReimbursementAgent" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>"Receiver" of COV payment. MT equivalent is tag 53A (Sender's Correspondent).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ForwardingAgent" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Intermediary between the beneficiary and beneficiary agent.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Counterparty">
+					<xs:annotation>
+						<xs:documentation>"Their" side of the operation. Contains the parties that are on "their" side of the settlement.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Beneficiary" type="EntityType">
+								<xs:annotation>
+									<xs:documentation>Payments/receipts: Party that owes an amount of money to the (ultimate) creditor.
+Direct debits: Party that is owed money by the (ultimate) debtor.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="BeneficiaryAgent" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Financial institution servicing an account for the beneficiary.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Intermediary1" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Agent between the entity beneficiary's agent and the counterparty beneficiary's agent.
+Usage: If more than one intermediary agent is present, then IntermediaryAgent1 identifies the agent between the Entity beneficiary Agent and the Entity Intermediary2.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Intermediary2" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Agent between the counterparty beneficiary's agent and the entity beneficiary's agent.
+Usage: If more than two intermediary agents are present, then Intermediary2 identifies the agent between the Intermediary1 and the Intermediary3.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Intermediary3" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Agent between the counterparty beneficiary's agent and the entity beneficiary's agent.
+Usage: If IntermediaryAgent3 is present, then it identifies the agent between the IntermediaryAgent 2 and the entity BeneficiaryAgent.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Ultimate" type="EntityType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Payments/receipts: Ultimate party that owes an amount of money to the (ultimate) creditor.
+Direct debits: Ultimate party that is owed money by the (ultimate) debtor.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ReimbursementAgent" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>A COV payment is processed by this agent on the Receiver's side. The MT equivalent is tag 54A. This is the Receiver's correspondent, and it may be absent if "Sender" and "Receiver" have same reimbursement agent (tag 53).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ThirdReimbursementAgent" type="EntityAgentType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>This is the equivalent of the MT tag 55a: agent at which the instructed agent will be reimbursed.
+Usage: If ThirdReimbursementAgent contains a branch of the InstructedAgent, then the party in the InstructedAgent will claim reimbursement from that branch or will be paid by that branch.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element type="xs:string" name="OriginatingSystem">
+					<xs:annotation>
+						<xs:documentation>The name of the system that was originally responsible for the existence of this settlement.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="PaymentIdentification">
+					<xs:annotation>
+						<xs:documentation>Set of elements to be used to reference a payment instruction.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="InstructionId" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Unique ID to unambiguously identify the instruction. Assigned by an intructing party for an instructed party.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="EndToEndId">
+								<xs:annotation>
+									<xs:documentation>Unique ID to unambiguously identify the transaction within the ION system. Useful for tracking.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="TransactionId" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Unique identification to unambiguously identify the transaction that is passed on, unchanged, throughout the entire interbank chain.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="UETR" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Unique End-to-end Transaction Reference. Universally unique identifier providing an end-to-end reference of a payment transaction. Featured in all payment instruction messages over the SWIFT network.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="ClearingReference" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Unique reference, as assigned by a clearing system, to unambiguously identify the instruction.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PaymentTypeInformation" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Set of elements to further specify the type of transaction.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="InstructionPriority" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Indicator of the urgency or order of importance that the instructing party would like the instructed party to apply to the processing of the instruction.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="HIGH"/>
+										<xs:enumeration value="NORM"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ClearingChannel" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Specifies the clearing channel to be used to process the payment instruction.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="RTGS"/>
+										<xs:enumeration value="RTNS"/>
+										<xs:enumeration value="MPNS"/>
+										<xs:enumeration value="BOOK"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ServiceLevel" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Agreement under which or rules under which the transaction should be processed.</xs:documentation>
+								</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Code" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Specifies a pre-agreed service or level of service between the parties, as published in an external service level code list.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Proprietary " type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Specifies a pre-agreed service or level of service between the parties, as a proprietary code.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+							</xs:element>
+							<xs:element name="LocalInstrument" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>User community specific instrument. Usage: This element is used to specify a local instrument, local clearing option and/or further qualify the service or service level.</xs:documentation>
+								</xs:annotation>
+										<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Code" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Specifies the local instrument, as published in an external local instrument code list.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Proprietary " type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Specifies the local instrument, as a proprietary code.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+							</xs:element>
+							<xs:element name="CategoryPurpose" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Specifies the high level purpose of the instruction based on a set of pre-defined categories. Usage: This is used by the initiating party to provide information concerning the processing of the payment. It is likely to trigger special processing by any of the agents involved in the payment chain.</xs:documentation>
+								</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Code" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Category purpose, as published in an external category purpose code list.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Proprietary " type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Category purpose, in a proprietary form.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element type="xs:string" name="ProductCode" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Associated product code if the settlement is part of a trade.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="UserId" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Latest user to have managed the settlement.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="MessageReference" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Identifier of the upstream message request.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="SettlementReference" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Identifier of the upstream settlement.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="TransactionReference" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Identifier of the upstream transaction.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="Sequence" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Indicates the sequence for this settlement for any subsequent settlement request(component that submitted the settlement request to Settlement Manager).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="TradeType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>The type of trade that triggered the settlement, for example: repo, FX, bond, or purchase.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="SettlementType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Possible values:
+- Cash = cash settlements
+- Security = securities.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SettlementPriority" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Indicates whether the settlement is urgent or not
+- 1 = urgent
+- 0 = not urgent.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="URGT"/>
+							<xs:enumeration value="HIGH"/>
+							<xs:enumeration value="NORM"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="SettlementTimeRequest" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Provides information on the requested settlement time(s) of the payment instruction.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="CLSTime" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Time by which the amount of money must be credited, with confirmation, to the CLS Bank's account at the central bank.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="TillTime" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Time until when the payment may be settled.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="FromTime" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Time as from when the payment may be settled.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="RejectTime" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Time by when the payment must be settled to avoid rejection.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Cash">
+					<xs:annotation>
+						<xs:documentation>Cash-related settlement details.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="Currency">
+								<xs:annotation>
+									<xs:documentation>Cash currency of the transfer. Preferably in ISO format.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="Amount">
+								<xs:annotation>
+									<xs:documentation>Instructed cash amount.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="Direction" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Possible values:
+- Pay = payments
+- Receive = receipts.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="DateSettlement">
+								<xs:annotation>
+									<xs:documentation>Date when the record should be settled.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="ReceiptType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Detailed specification of the receipt, because the processing of advices and direct debits is different.
+Possible values:
+- Advise = for receipts
+- DirectDebit = for direct debits.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="CashflowType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Specification of the cash flow type related to the settlement: used internally to indicate the purpose of the payment and to drive accounting processing.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SettlementInformation" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Settlement-specific information.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="SettlementCenter" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Settlement center that should be used for this request. Settlement Center is used to partition the settlements processing.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="SettlementSource" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Name of the ION component that submitted the settlement request to Settlement Manager.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="SettlementAccount" type="AccountDetailsType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Tag 53B in an MT context: Sender's Correspondent (option 53B - account to be debited). A specific purpose account used to post debit and credit entries as a result of the transaction.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element type="xs:string" name="InstructedAmount" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Amount of money to be moved between the debtor and creditor, before deduction of charges, expressed in the currency as ordered by the initiating party.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="InstructedAmountCurrency" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Currency of the instructed amount.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="ExchangeRate" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Factor used to convert an amount from one currency into another. This reflects the price at which one currency was bought with another currency.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="NettingDesignation" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>This is information about what netting process, if any, was performed on a settlement.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="EligibleForManualNetting" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Settlement is eligible for manual netting.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="EligibleForSplitting" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Settlement is eligible for splitting.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Charges" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Provides information on the charges to be paid by the charge bearer(s) related to the payment transaction.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ChargeBearer">
+								<xs:annotation>
+									<xs:documentation>Specifies which party/parties will bear the charges associated with the processing of the payment transaction.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="DEBT"/>
+										<xs:enumeration value="CRED"/>
+										<xs:enumeration value="SHAR"/>
+										<xs:enumeration value="SLEV"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ChargesInformation" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Provides information on the charges to be paid by the charge bearer(s) related to the payment transaction.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="xs:string" name="Currency">
+											<xs:annotation>
+												<xs:documentation>Currency to be used for transaction charges.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Amount">
+											<xs:annotation>
+												<xs:documentation>Transaction charges to be paid by the charge bearer.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Direction" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>TBD</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="ChargeAgent">
+											<xs:annotation>
+												<xs:documentation>Agent that takes the transaction charges or to which the transaction charges are due.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="PartyDetails" type="PartyDetailsType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Information specific to the charge agent.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="IdentificationDetails" type="IdentificationDetailsType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Unique and unambiguous identification of the charge agent institution.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="PostalAddress" type="AddressType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Charge agent's postal address information.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SEPA" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Single Euro Payment Area information.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="CreditorSchemeId" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Identification with the PEACH of the credit party that signs the mandate.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="MandateStatus" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Identifies the direct debit sequence, such as first, recurrent, final or one-off. Possible values are:
+										- FRST: First collection of a series of direct debit instructions.
+										- RCUR: Direct debit instruction where the debtor's authorisation is used for regular direct debit transactions initiated by the creditor.
+										- FNAL: Final collection of a series of direct debit instructions.
+										- OOFF: (One off) Direct debit instruction where the debtor's authorisation is used to initiate one single direct debit transaction.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="MandateId" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Unique identification, as assigned by the creditor, to unambiguously identify the mandate.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="MandateDate" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Date on which the direct debit mandate has been signed by the debtor.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="SddType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>The identification code of the Scheme.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				
+				<xs:element name="MT" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>MT messages additional details.</xs:documentation>
+					</xs:annotation>				
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="SenderToReceiverInformation" minOccurs="0" maxOccurs="6">
+									<xs:annotation>
+										<xs:documentation>This field specifies additional information for the Receiver or other party specified. It corresponds to tag 72.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element type="xs:string" name="RemittanceInformation" minOccurs="0" maxOccurs="4">
+									<xs:annotation>
+										<xs:documentation>This field specifies either the details of the individual transaction or a reference to another message containing the details which are to be transmitted to the beneficiary customer. It corresponds to tag 70.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element type="xs:string" name="InstructionCodes" minOccurs="0" maxOccurs="unbounded">
+									<xs:annotation>
+										<xs:documentation>This field specifies instructions to be used between the ordering customer and the account servicer. It corresponds to tag 23E.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element type="xs:string" name="RegulatoryReporting" minOccurs="0" maxOccurs="3">
+									<xs:annotation>
+										<xs:documentation>This field specifies the codes for the statutory and/or regulatory information required by the authorities in the country of the Receiver or the Sender/originating customer. It corresponds to tag 77B.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+				</xs:element>
+			
+				<xs:element name="RegulatoryReporting" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Information needed due to regulatory and statutory requirements.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DebitCreditIndicator" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Identifies whether the regulatory reporting information applies to the debit side, to the credit side or to both debit and credit sides of the transaction.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="DEBT"/>
+										<xs:enumeration value="CRED"/>
+										<xs:enumeration value="BOTH"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Authority" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Entity requiring the regulatory reporting information.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="xs:string" name="Name" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Name of the entity requiring the regulatory reporting information.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Country" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Country of the entity that requires the regulatory reporting information.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Details" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Set of elements used to provide details on the regulatory reporting information.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="xs:string" name="Type" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Specifies the type of the information supplied in the regulatory reporting details.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Date" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Date related to the specified type of regulatory reporting details.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Country" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Country related to the specified type of regulatory reporting details.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Code" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Specifies the nature, purpose, and reason for the transaction to be reported for regulatory and statutory requirements in a coded form.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Amount" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Amount of money to be reported for regulatory and statutory requirements.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Information" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Additional details that cater for specific domestic regulatory requirements.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="InstructionForCreditorAgent" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Further information related to the processing of the payment instruction, provided by the initiating party, and intended for the creditor agent.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Code" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Coded information related to the processing of the payment instruction, provided by the initiating party, and intended for the creditor's agent.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="CHQB"/>
+										<xs:enumeration value="HOLD"/>
+										<xs:enumeration value="PHOB"/>
+										<xs:enumeration value="TELB"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element type="xs:string" name="InstructionInformation" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Further information complementing the coded instruction or instruction to the creditor's agent that is bilaterally agreed or specific to a user community.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="InstructionForNextAgent" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Further information related to the processing of the payment instruction that may need to be acted upon by the next agent.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="InstructionInformation" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Further information complementing the coded instruction or instruction to the next agent that is bilaterally agreed or specific to a user community.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element type="xs:string" name="InstructionForDebtorAgent" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Further information related to the processing of the payment instruction, that may need to be acted upon by the debtor agent, depending on agreement between debtor and the debtor agent.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="SenderToReceiver" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Information related to sender and receiver (equivalent to MT tag 72).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="References" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>List of references attached to the transaction.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="Name" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Name of the reference.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="Value" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Value of the reference.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="RemittanceInformation" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Information supplied to help the matching of an entry with the items that the transfer is intended to settle.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Unstructured" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Information supplied to help the matching of an entry with the items that the transfer is intended to settle, in an unstructured form.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType mixed="true">
+									<xs:sequence>
+										<xs:element type="xs:string" name="UnstructuredLine" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Further information complementing the coded instruction or instruction to the next agent that is bilaterally agreed or specific to a user community.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Structured" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Information supplied to enable the matching/reconciliation of an entry with the items that the payment is intended to settle, such as commercial invoices in an accounts' receivable system, in a structured form.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ReferredDocumentInformation" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Provides the identification and the content of the referred document.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Type" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Specifies the type of referred document.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="CodeorProprietary" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Provides the type details of the referred document.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Code" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Document type in a coded form.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Proprietary identification of the type of the remittance document.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identification of the issuer of the reference document type.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="Number" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Unique and unambiguous identification of the referred document.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element type="xs:string" name="RelatedDate" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Date associated with the referred document.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="LineDetails" minOccurs="0" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Set of elements used to provide the content of the referred document line.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Identification" minOccurs="0" maxOccurs="unbounded">
+																	<xs:annotation>
+																		<xs:documentation>Provides identification of the document line.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="Type" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Specifies the type of referred document line identification.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="CodeorProprietary" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Provides the type details of the referred document line identification.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Code" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Line identification type in a coded form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Proprietary identification of the type of the remittance document.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Identification of the issuer of the reference document line identificationtype.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Number" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identification of the type specified for the referred document line.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="RelatedDate" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Date associated with the referred document line.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element type="xs:string" name="Description" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Description associated with the document line.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Provides details on the amounts of the document line.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="DuePayableAmount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Amount specified is the exact amount due and payable to the creditor.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Provides details on the amounts of the document line.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Currency" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="DiscountAppliedAmount" minOccurs="0" maxOccurs="unbounded">
+																				<xs:annotation>
+																					<xs:documentation>Amount of discount to be applied to the amount due and payable to the creditor.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="Type" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Specifies the type of the amount.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Code" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Specifies the amount type, in a coded form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Specifies the amount type, in a free-text form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Amount of money, which has been typed.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Amount" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Currency" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="CreditNoteAmount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Amount specified for the referred document is the amount of a credit note.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Currency" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="TaxAmount" minOccurs="0" maxOccurs="unbounded">
+																				<xs:annotation>
+																					<xs:documentation>Quantity of cash resulting from the calculation of the tax.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="Type" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Specifies the type of the amount.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Code" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Specifies the amount type, in a coded form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Specifies the amount type, in a free-text form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Amount of money, which has been typed.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Amount" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Currency" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="AdjustmentAmountandReason" minOccurs="0" maxOccurs="unbounded">
+																				<xs:annotation>
+																					<xs:documentation>Specifies detailed information on the amount and reason of the document adjustment.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Amount of money of the document adjustment.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Amount" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Currency" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element type="xs:string" name="CreditDebitIndicator" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Specifies whether the adjustment must be subtracted or added to the total amount.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Reason" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Specifies the reason for the adjustment.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="AdditionalInformation" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Additional information (ISO) that cannot be captured in the structured elements and/or any other specific block.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="RemittedAmount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Amount of money remitted for the referred document.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Currency" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="ReferredDocumentAmount" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Provides details on the amounts of the referred document.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="DuePayableAmount" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Amount specified is the exact amount due and payable to the creditor.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Currency" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="DiscountAppliedAmount" minOccurs="0" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Amount of discount to be applied to the amount due and payable to the creditor.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Type" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Specifies the type of the amount.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Code" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Specifies the amount type, in a coded form.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Specifies the amount type, in a free-text form.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Amount of money, which has been typed.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Amount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Currency" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="CreditNoteAmount" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Amount of a credit note.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Currency" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="TaxAmount" minOccurs="0" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Amount of the tax.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Type" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Specifies the type of the amount.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Code" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Specifies the amount type, in a coded form.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Specifies the amount type, in a free-text form.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Amount of money, which has been typed.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Amount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Currency" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="AdjustmentAmountandReason" minOccurs="0" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Specifies detailed information on the amount and reason of the adjustment.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Amount of money of the document adjustment.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Amount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Currency" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element type="xs:string" name="CreditDebitIndicator" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Specifies whether the adjustment must be subtracted or added to the total amount.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Reason" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Specifies the reason for the adjustment.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="AdditionalInformation" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Provides further details on the document adjustment.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="RemittedAmount" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Amount of money remitted.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Currency" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="CreditorReferenceInformation" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Reference information provided by the creditor to allow the identification of the underlying documents.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Type" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Specifies the type of creditor reference.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="CodeorProprietary" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Coded or proprietary format creditor reference type.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Code" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Type of creditor reference, in a coded form.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Creditor reference type, in a proprietary form.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Entity that assigns the credit reference type.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="Reference" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Unique reference, as assigned by the creditor, to unambiguously refer to the payment transaction. Usage: If available, the initiating party should provide this reference in the structured remittance information, to enable reconciliation by the creditor upon receipt of the amount of money. If the business context requires the use of a creditor reference or a payment remit identification, and only one identifier can be passed through the end-to-end chain, the creditor's reference or payment remittance identification should be quoted in the end-to-end transaction identification.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Invoicer" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Identification of the organisation issuing the invoice, when it is different from the creditor or ultimate creditor.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element type="xs:string" name="Name" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Name by which a party is known and which is usually used to identify that party.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="PostalAddress" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Information that locates and identifies a specific address, as defined by postal services.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Department" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identification of a division of a large organisation or building.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="SubDepartment" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identification of a sub-division of a large organisation or building.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="StreetName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name of a street or thoroughfare.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="BuildingNumber" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Number that identifies the position of a building on a street.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="BuildingName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name of the building or house.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Floor" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Floor or storey within a building.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="PostBox" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Room" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Building room number.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="PostCode" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="TownName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name of a built-up area, with defined boundaries, and a local government.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="TownLocationName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Specific location name within the town.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="DistrictName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identifies a subdivision within a country sub-division.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="CountrySubDivision" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identifies a subdivision of a country such as state, region, county.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Country" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Nation with its own government.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Identification" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Unique and unambiguous identification of a party.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="OrganisationIdentification" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique and unambiguous way to identify an organisation.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="BIC" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Business identification code of the organisation.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="LegalEntity" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Legal entity identification as an alternate identification for a party.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																				<xs:annotation>
+																					<xs:documentation>Unique identification of an organisation, as assigned by an institution, using an identification scheme.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Id" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Identification assigned by an institution.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element name="SchemeName" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Name of the identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Code" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="PrivateIdentification" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique and unambiguous identification of a person, for example a passport.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="DateAndPlaceOfBirth" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Date and place of birth of a person.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Birthdate" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Date on which a person is born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="ProvinceofBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Province where a person was born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="CityofBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>City where a person was born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="CountryofBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Country where a person was born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																				<xs:annotation>
+																					<xs:documentation>Unique identification of a person, as assigned by an institution, using an identification scheme.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Id" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Unique and unambiguous identification of a person.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element name="SchemeName" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Name of the identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Code" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="CountryofResidence" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Country in which a person resides (the place of a person's home). In the case of a company, it is the country from which the affairs of that company are directed.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Invoicee" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Identification of the party to whom an invoice is issued, when it is different from the debtor or ultimate debtor.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element type="xs:string" name="Name" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Name by which a party is known and which is usually used to identify that party.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="PostalAddress" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Information that locates and identifies a specific address, as defined by postal services.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Department" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identification of a division of a large organisation or building.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="SubDepartment" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identification of a sub-division of a large organisation or building.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="StreetName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name of a street or thoroughfare.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="BuildingNumber" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Number that identifies the position of a building on a street.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="BuildingName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name of the building or house.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Floor" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Floor or storey within a building.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="PostBox" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Room" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Building room number.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="PostCode" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="TownName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name of a built-up area, with defined boundaries, and a local government.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="TownLocationName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Specific location name within the town.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="DistrictName" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identifies a subdivision within a country sub-division.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="CountrySubDivision" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identifies a subdivision of a country such as state, region, county.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Country" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Nation with its own government.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Identification" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Unique and unambiguous identification of a party.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="OrganisationIdentification" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique and unambiguous way to identify an organisation.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="BIC" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Business identification code of the organisation.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="LegalEntity" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Legal entity identification as an alternate identification for a party.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																				<xs:annotation>
+																					<xs:documentation>Unique identification of an organisation, as assigned by an institution, using an identification scheme.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Id" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Identification assigned by an institution.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element name="SchemeName" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Name of the identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Code" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="PrivateIdentification" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique and unambiguous identification of a person, for example a passport.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="DateAndPlaceOfBirth" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Date and place of birth of a person.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Birthdate" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Date on which a person is born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="ProvinceofBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Province where a person was born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="CityofBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>City where a person was born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="CountryofBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Country where a person was born.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																				<xs:annotation>
+																					<xs:documentation>Unique identification of a person, as assigned by an institution, using an identification scheme.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Id" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Unique and unambiguous identification of a person.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element name="SchemeName" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Name of the identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Code" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="CountryofResidence" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Country in which a person resides (the place of a person's home). In the case of a company, it is the country from which the affairs of that company are directed.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="TaxRemittance" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Provides remittance information about a payment made for tax-related purposes.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Creditor" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Party on the credit side of the transaction to which the tax applies.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="TaxId" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Tax identification number of the creditor.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="RegistrationId" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique identification, as assigned by an organisation, to unambiguously identify a party.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="TaxType" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Type of tax payer.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Debtor" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Identifies the party on the debit side of the transaction to which the tax applies.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="TaxId" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Tax identification number of the debtor.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="RegistrationId" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique identification, as assigned by an organisation, to unambiguously identify a party.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="TaxType" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Type of tax payer.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="UltimateDebtor" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Ultimate party that owes an amount of money to the (ultimate) creditor, in this case, to the taxing authority.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="TaxId" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Tax identification number of the debtor.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="RegistrationId" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique identification, as assigned by an organisation, to unambiguously identify a party.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="TaxType" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Type of tax payer.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="AdministrationZone" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Territorial part of a country to which the tax payment is related.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element type="xs:string" name="ReferenceNumber" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Tax reference information that is specific to a taxing agency.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element type="xs:string" name="Method" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Method used to indicate the underlying business or how the tax is paid.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="TotalTaxableBaseAmount" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Total amount of money on which the tax is based.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Currency" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="TotalTaxAmount" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Total amount of money as result of the calculation of the tax.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Amount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Currency" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="Date" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Date by which tax is due.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element type="xs:string" name="SequenceNumber" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Sequential number of the tax report.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Record" minOccurs="0" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Record of tax details.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Type" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>High level code to identify the type of tax details.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Category" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Specifies the tax code as published by the tax authority.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="CategoryDetails" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Provides further details of the category tax code.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="DebtorStatus" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Code provided by local authority to identify the status of the party that has drawn up the settlement document.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="CertificateId" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identification number of the tax report as assigned by the taxing authority.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="FormsCode" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identifies, in a coded form, on which template the tax report is to be provided.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="Period" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Set of elements used to provide details on the period of time related to the tax payment.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Year" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Year related to the tax payment.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Type" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identification of the period related to the tax payment.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element name="FromToDate" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Range of time between a start date and an end date for which the tax report is provided.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="FromDate" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Start date of the range.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="ToDate" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>End date of the range.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="TaxAmount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Set of elements used to provide information on the amount of the tax record.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Rate" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Rate used to calculate the tax.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element name="TaxableBaseAmount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Amount of money on which the tax is based.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Currency" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="TotalAmount" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Total amount that is the result of the calculation of the tax for the record.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="Currency" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="Details" minOccurs="0" maxOccurs="unbounded">
+																				<xs:annotation>
+																					<xs:documentation>Set of elements used to provide details on the tax period and amount.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="Period" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Set of elements used to provide details on the period of time related to the tax payment.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Year" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Year related to the tax payment.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Type" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Identification of the period related to the tax payment.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element name="FromToDate" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Range of time between a start date and an end date for which the tax report is provided.</xs:documentation>
+																										</xs:annotation>
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element type="xs:string" name="FromDate" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Start date of the range.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																												<xs:element type="xs:string" name="ToDate" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>End date of the range.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="Amount" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Underlying tax amount related to the specified period.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Amount" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Currency" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="GarnishmentRemittance" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Provides remittance information about a payment for garnishment-related purposes.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Type" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Specifies the type of garnishment.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="CodeorProprietary" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Provides the type details of the garnishment.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Code" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Garnishment type in a coded form.
+Would suggest this to be an External Code List to contain:
+GNCS    Garnishment from a third party payer for Child Support
+GNDP    Garnishment from a Direct Payer for Child Support
+GTPP     Garnishment from a third party payer to taxing agency.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Proprietary identification of the type of garnishment.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Identification of the issuer of the garnishment type.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Garnishee" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Ultimate party that owes an amount of money to the (ultimate) creditor, in this case, to the garnisher.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Name" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name by which a party is known and which is usually used to identify that party.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="PostalAddress" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Information that locates and identifies a specific address, as defined by postal services.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Department" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identification of a division of a large organisation or building.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="SubDepartment" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identification of a sub-division of a large organisation or building.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="StreetName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Name of a street or thoroughfare.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="BuildingNumber" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Number that identifies the position of a building on a street.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="BuildingName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Name of the building or house.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Floor" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Floor or storey within a building.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="PostBox" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Room" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Building room number.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="PostCode" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="TownName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Name of a built-up area, with defined boundaries, and a local government.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="TownLocationName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Specific location name within the town.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="DistrictName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identifies a subdivision within a country sub-division.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="CountrySubDivision" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identifies a subdivision of a country such as state, region, county.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Country" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Nation with its own government.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="Identification" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique and unambiguous identification of a party.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="OrganisationIdentification" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Unique and unambiguous way to identify an organisation.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="BIC" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Business identification code of the organisation.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="LegalEntity" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Legal entity identification as an alternate identification for a party.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																							<xs:annotation>
+																								<xs:documentation>Unique identification of an organisation, as assigned by an institution, using an identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Id" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Identification assigned by an institution.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element name="SchemeName" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme.</xs:documentation>
+																										</xs:annotation>
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element type="xs:string" name="Code" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																												<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="PrivateIdentification" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Unique and unambiguous identification of a person, for example a passport.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="DateAndPlaceOfBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Date and place of birth of a person.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Birthdate" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Date on which a person is born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="ProvinceofBirth" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Province where a person was born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="CityofBirth" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>City where a person was born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="CountryofBirth" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Country where a person was born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																							<xs:annotation>
+																								<xs:documentation>Unique identification of a person, as assigned by an institution, using an identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Id" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Unique and unambiguous identification of a person.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element name="SchemeName" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme.</xs:documentation>
+																										</xs:annotation>
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element type="xs:string" name="Code" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																												<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element type="xs:string" name="CountryofResidence" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Country in which a person resides (the place of a person's home). In the case of a company, it is the country from which the affairs of that company are directed.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="GarnishmentAdministrator" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Party on the credit side of the transaction who administers the garnishment on behalf of the ultimate beneficiary.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="Name" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Name by which a party is known and which is usually used to identify that party.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="PostalAddress" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Information that locates and identifies a specific address, as defined by postal services.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element type="xs:string" name="Department" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identification of a division of a large organisation or building.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="SubDepartment" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identification of a sub-division of a large organisation or building.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="StreetName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Name of a street or thoroughfare.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="BuildingNumber" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Number that identifies the position of a building on a street.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="BuildingName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Name of the building or house.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Floor" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Floor or storey within a building.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="PostBox" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Numbered box in a post office, assigned to a person or organisation, where letters are kept until called for.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Room" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Building room number.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="PostCode" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identifier consisting of a group of letters and/or numbers that is added to a postal address to assist the sorting of mail.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="TownName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Name of a built-up area, with defined boundaries, and a local government.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="TownLocationName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Specific location name within the town.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="DistrictName" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identifies a subdivision within a country sub-division.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="CountrySubDivision" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Identifies a subdivision of a country such as state, region, county.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																			<xs:element type="xs:string" name="Country" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Nation with its own government.</xs:documentation>
+																				</xs:annotation>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="Identification" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Unique and unambiguous identification of a party.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="OrganisationIdentification" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Unique and unambiguous way to identify an organisation.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element type="xs:string" name="BIC" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Business identification code of the organisation.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element type="xs:string" name="LegalEntity" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Legal entity identification as an alternate identification for a party.</xs:documentation>
+																							</xs:annotation>
+																						</xs:element>
+																						<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																							<xs:annotation>
+																								<xs:documentation>Unique identification of an organisation, as assigned by an institution, using an identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Id" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Identification assigned by an institution.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element name="SchemeName" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme.</xs:documentation>
+																										</xs:annotation>
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element type="xs:string" name="Code" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																												<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="PrivateIdentification" minOccurs="0">
+																				<xs:annotation>
+																					<xs:documentation>Unique and unambiguous identification of a person, for example a passport.</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="DateAndPlaceOfBirth" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation>Date and place of birth of a person.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Birthdate" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Date on which a person is born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="ProvinceofBirth" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Province where a person was born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="CityofBirth" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>City where a person was born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element type="xs:string" name="CountryofBirth" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Country where a person was born.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="Other" minOccurs="0" maxOccurs="2">
+																							<xs:annotation>
+																								<xs:documentation>Unique identification of a person, as assigned by an institution, using an identification scheme.</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element type="xs:string" name="Id" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Unique and unambiguous identification of a person.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																									<xs:element name="SchemeName" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Name of the identification scheme.</xs:documentation>
+																										</xs:annotation>
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element type="xs:string" name="Code" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a coded form as published in an external list.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																												<xs:element type="xs:string" name="Proprietary" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>Name of the identification scheme, in a free text form.</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																									<xs:element type="xs:string" name="Issuer" minOccurs="0">
+																										<xs:annotation>
+																											<xs:documentation>Entity that assigns the identification.</xs:documentation>
+																										</xs:annotation>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element type="xs:string" name="CountryofResidence" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Country in which a person resides (the place of a person's home). In the case of a company, it is the country from which the affairs of that company are directed.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="ReferenceNumber" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Reference information that is specific to the agency receiving the garnishment.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element type="xs:string" name="Date" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Date of payment which garnishment was taken from.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="RemittedAmount" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Amount of money remitted for the referred document.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element type="xs:string" name="RemittedAmount" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The number of fractional digits (or minor unit of currency) must comply with ISO 4217. Note: The decimal separator is a dot.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element type="xs:string" name="Currency" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Medium of exchange of currency.</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element type="xs:string" name="FamilyMedicalInsuranceId" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Indicates if the person to whom the garnishment applies (that is, the ultimate debtor) has family medical insurance coverage available.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element type="xs:string" name="EmployeeTerminationIndicator" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Indicates if the employment of the person to whom the garnishment applies (that is, the ultimate debtor) has been terminated.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element type="xs:string" name="AdditionalRemittanceInformation" minOccurs="0" maxOccurs="3">
+											<xs:annotation>
+												<xs:documentation>Additional information, in free text form, to complement the structured remittance information.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="RelatedRemittanceInformation" minOccurs="0" maxOccurs="10">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="RemittanceId" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Unique identification, as assigned by the initiating party, to unambiguously identify the remittance information sent separately from the payment instruction, such as a remittance advice.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="RemittanceLocationDetails" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Set of elements used to provide information on the location and/or delivery of the remittance information.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="xs:string" name="Method" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Method used to deliver the remittance advice information.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="ElectronicAddress" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Electronic address to which an agent is to send the remittance information.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Name" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Name by which a party is known and is usually used to identify that party.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="PostalAddress" type="AddressType" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Postal address to which an agent is to send the remittance information.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element type="xs:string" name="AdditionalInformation" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Additional information (ISO) that cannot be captured in the structured elements and/or any other specific block.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="AdditionalParameters" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Any (internal) information that users wish to add.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Parameter" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Parameter list.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="xs:string" name="Name">
+											<xs:annotation>
+												<xs:documentation>Name of the parameter.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="Value">
+											<xs:annotation>
+												<xs:documentation>Value  of the parameter.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Cancellation" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Cancellation-related information.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="MessageId" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Business message identifier of the cancellation message assigned by the consumer ION component.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Sender" type="EntityType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>This is the business sender of the cancellation message.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Receiver" type="EntityType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>This is the business receiver of the cancellation message.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Assigner" type="EntityType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Party who assigns the case.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Assignee" type="EntityType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Party that is assigned the case.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="UserId" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Latest user to have managed the settlement cancellation.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element type="xs:string" name="MessageReference" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Identifier of the upstream cancellation message request.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="CancellationIdentification" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Set of elements to be used to reference a payment cancellation instruction.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="xs:string" name="InstructionId" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Unique ID to unambiguously identify the cancellation instruction. Assigned by an intructing party for an instructed party.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="EndToEndId" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Unique ID to unambiguously identify the transaction cancellation within the ION system. Useful for tracking.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CancellationReason" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Specifies the reason for the cancellation request.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="CancellationOriginator" type="EntityType" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Party that issues the cancellation request.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element type="xs:string" name="ReasonCode" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Reason for the cancellation request, in a coded form.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="AdditionalInformation" minOccurs="0" maxOccurs="2">
+											<xs:annotation>
+												<xs:documentation>Provides additional information on the cancellation reason.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element type="xs:string" name="Comment" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Further details on the cancellation request reason.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="IsCrossBorder" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Is Cross-Border.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>]]></schemaDefinition>
+        <schemaDefinitionName><![CDATA[ISO20022SettlementMessageRequest.xsd]]></schemaDefinitionName>
+    </schemaDefinitions>
+</xmlFormatMetadata>
+
