@@ -59,6 +59,13 @@ def _log_tool(func):
                 summary = f"dict with {len(result)} keys"
             else:
                 summary = type(result).__name__
+            # Log response payload size
+            import json
+            try:
+                payload_size = len(json.dumps(result, default=str))
+                summary += f", {payload_size:,} chars"
+            except Exception:
+                pass
             logger.info("<- %s completed in %.1fms — returned %s", func.__name__, elapsed, summary)
             return result
         except Exception as exc:
