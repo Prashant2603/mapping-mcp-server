@@ -1,6 +1,8 @@
 """MCP server with tool registration using FastMCP."""
 
+import functools
 import logging
+import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -9,6 +11,7 @@ from mcp.server.fastmcp import FastMCP
 from config import settings
 from models import (
     FormatInfo,
+    FullFileContent,
     MappingContext,
     MappingSetDetail,
     MappingSetInfo,
@@ -35,7 +38,57 @@ def _get_rag() -> RAGIndex:
     return rag
 
 
+def _log_tool(func):
+    """Decorator that logs tool invocation, arguments, and elapsed time."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        params = ", ".join(
+            [repr(a) for a in args]
+            + [f"{k}={v!r}" for k, v in kwargs.items()]
+        )
+        logger.info("-> %s(%s)", func.__name__, params)
+        start = time.perf_counter()
+        try:
+            result = func(*args, **kwargs)
+            elapsed = (time.perf_counter() - start) * 1000
+            # Summarize result size for readability
+            if isinstance(result, list):
+                summary = f"{len(result)} items"
+            elif isinstance(result, dict):
+                summary = f"dict with {len(result)} keys"
+            else:
+                summary = type(result).__name__
+            logger.info("<- %s completed in %.1fms — returned %s", func.__name__, elapsed, summary)
+            return result
+        except Exception as exc:
+            elapsed = (time.perf_counter() - start) * 1000
+            logger.error("<- %s failed in %.1fms — %s: %s", func.__name__, elapsed, type(exc).__name__, exc)
+            raise
+
+    return wrapper
+
+
+def _parse_mapping_set_metadata(content: str) -> dict:
+    """Extract source/target/description from mapping set XML."""
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError:
+        return {}
+    src = (root.findtext("sourceFormat") or root.attrib.get("source", "")).strip()
+    tgt = (root.findtext("targetFormat") or root.attrib.get("target", "")).strip()
+    desc = (root.findtext("description") or root.attrib.get("name", "")).strip()
+    ms_id = (root.findtext("id") or "").strip()
+    return {
+        "source_format": src,
+        "target_format": tgt,
+        "description": desc,
+        "id": ms_id,
+    }
+
+
 @mcp.tool()
+@_log_tool
 def list_formats(extension: str | None = None) -> list[dict]:
     """List all known format files with basic info.
 
@@ -67,6 +120,7 @@ def list_formats(extension: str | None = None) -> list[dict]:
 
 
 @mcp.tool()
+@_log_tool
 def list_mapping_sets() -> list[dict]:
     """List all available mapping sets with source/target info.
 
@@ -81,22 +135,12 @@ def list_mapping_sets() -> list[dict]:
         summary = ""
         try:
             content = index.get_file_content(f["file_path"])
-            root = ET.fromstring(content)
-            # Try child elements first (e.g. <sourceFormat>, <targetFormat>)
-            src_el = root.find("sourceFormat")
-            tgt_el = root.find("targetFormat")
-            src = src_el.text if src_el is not None and src_el.text else root.attrib.get("source", "")
-            tgt = tgt_el.text if tgt_el is not None and tgt_el.text else root.attrib.get("target", "")
+            meta = _parse_mapping_set_metadata(content)
+            src = meta.get("source_format", "")
+            tgt = meta.get("target_format", "")
             if src or tgt:
                 source_target = f"{src} -> {tgt}"
-            # Try child elements for description/id, then root attributes
-            desc_el = root.find("description")
-            id_el = root.find("id")
-            summary = (
-                (desc_el.text if desc_el is not None and desc_el.text else "")
-                or (id_el.text if id_el is not None and id_el.text else "")
-                or root.attrib.get("name", "")
-            )
+            summary = meta.get("description", "") or meta.get("id", "")
         except Exception:
             pass
         results.append(
@@ -111,6 +155,7 @@ def list_mapping_sets() -> list[dict]:
 
 
 @mcp.tool()
+@_log_tool
 def get_mapping_set_details(file_path: str) -> dict:
     """Get the full content of a specific mapping set.
 
@@ -143,6 +188,7 @@ def get_mapping_set_details(file_path: str) -> dict:
 
 
 @mcp.tool()
+@_log_tool
 def search_docs(
     query: str,
     source_type: str | None = None,
@@ -169,6 +215,7 @@ def search_docs(
 
 
 @mcp.tool()
+@_log_tool
 def search_functions(query: str, top_k: int = 5) -> list[dict]:
     """Semantic search focused only on function documentation.
 
@@ -185,37 +232,127 @@ def search_functions(query: str, top_k: int = 5) -> list[dict]:
 
 
 @mcp.tool()
+@_log_tool
+def find_relevant_mapping_set(query: str, top_k: int = 3) -> list[dict]:
+    """Find mapping sets most relevant to a query. Returns metadata only, not full content.
+
+    Use get_mapping_set_details() to retrieve the full content of a specific mapping set.
+
+    Args:
+        query: Natural language query (e.g. "SMRV4 to pain.001" or "settlement message mapping").
+        top_k: Maximum number of mapping sets to return (default 3).
+
+    Returns:
+        List of mapping sets with file_path, source_format, target_format, description, and relevance_score.
+    """
+    index = _get_rag()
+    results = index.search(query, source_type="mapping_set", top_k=top_k * 3)
+
+    # Deduplicate by file_path and enrich with parsed metadata
+    seen: set[str] = set()
+    output: list[dict] = []
+    for r in results:
+        if r.file_path in seen:
+            continue
+        seen.add(r.file_path)
+        meta = {}
+        try:
+            content = index.get_file_content(r.file_path)
+            meta = _parse_mapping_set_metadata(content)
+        except Exception:
+            pass
+        output.append({
+            "file_path": r.file_path,
+            "source_format": meta.get("source_format", ""),
+            "target_format": meta.get("target_format", ""),
+            "description": meta.get("description", ""),
+            "relevance_score": r.score,
+        })
+        if len(output) >= top_k:
+            break
+    return output
+
+
+@mcp.tool()
+@_log_tool
 def generate_mapping_context(
     source_format: str,
     target_format: str,
     description: str | None = None,
+    max_content_chars: int = 50000,
 ) -> dict:
     """Prepare all relevant context needed to generate a new mapping set XML.
 
-    Gathers relevant formats, similar existing mapping sets, and function documentation
-    so that an LLM can generate the final XML mapping set.
+    Gathers full content of the most relevant existing mapping sets and format
+    definitions, plus function documentation snippets, so that an LLM can
+    generate the final XML mapping set.
 
     Args:
-        source_format: Identifier of the source format (e.g. "EDIFACT_D96A").
-        target_format: Identifier of the target format (e.g. "X12_850").
+        source_format: Identifier of the source format (e.g. "SettlementMessageRequestV4").
+        target_format: Identifier of the target format (e.g. "pain.001.001.02").
         description: Optional natural-language description of the mapping request.
+        max_content_chars: Maximum characters per file content (default 50000).
+            Files exceeding this are truncated with a note to use get_mapping_set_details.
 
     Returns:
-        Context bundle with relevant_formats, similar_mapping_sets, relevant_functions,
-        and a suggested XML skeleton template.
+        Context bundle with reference_mapping_sets (full content), format_definitions
+        (full content), relevant_functions (snippets), and a suggested XML skeleton.
     """
     index = _get_rag()
-    composite_query = f"mapping from {source_format} to {target_format}"
+    query = f"mapping from {source_format} to {target_format}"
     if description:
-        composite_query += f" - {description}"
+        query += f" {description}"
 
-    relevant_formats = index.search(composite_query, source_type="format", top_k=3)
-    similar_mappings = index.search(
-        composite_query, source_type="mapping_set", top_k=3
-    )
-    relevant_functions = index.search(
-        composite_query, source_type="functions_doc", top_k=5
-    )
+    # Step 1: Find relevant mapping sets via semantic search, deduplicate by file
+    similar = index.search(query, source_type="mapping_set", top_k=9)
+    seen_ms: set[str] = set()
+    reference_mapping_sets: list[FullFileContent] = []
+    for result in similar:
+        if result.file_path in seen_ms:
+            continue
+        seen_ms.add(result.file_path)
+        try:
+            content = index.get_file_content(result.file_path)
+            if len(content) > max_content_chars:
+                content = (
+                    content[:max_content_chars]
+                    + f"\n\n[Truncated at {max_content_chars} chars. "
+                    f"Use get_mapping_set_details('{result.file_path}') for full content.]"
+                )
+            reference_mapping_sets.append(
+                FullFileContent(file_path=result.file_path, content=content)
+            )
+        except Exception:
+            pass
+        if len(reference_mapping_sets) >= 3:
+            break
+
+    # Step 2: Find relevant format definitions, deduplicate by file
+    format_query = f"{source_format} {target_format} format schema"
+    format_results = index.search(format_query, source_type="format", top_k=9)
+    seen_fmt: set[str] = set()
+    format_definitions: list[FullFileContent] = []
+    for result in format_results:
+        if result.file_path in seen_fmt:
+            continue
+        seen_fmt.add(result.file_path)
+        try:
+            content = index.get_file_content(result.file_path)
+            if len(content) > max_content_chars:
+                content = (
+                    content[:max_content_chars]
+                    + f"\n\n[Truncated at {max_content_chars} chars.]"
+                )
+            format_definitions.append(
+                FullFileContent(file_path=result.file_path, content=content)
+            )
+        except Exception:
+            pass
+        if len(format_definitions) >= 3:
+            break
+
+    # Step 3: Get relevant function docs (snippets are fine)
+    func_results = index.search(query, source_type="functions_doc", top_k=5)
 
     xml_skeleton = f"""<?xml version="1.0"?>
 <MappingSet source="{source_format}" target="{target_format}" version="1.0">
@@ -226,8 +363,10 @@ def generate_mapping_context(
 </MappingSet>"""
 
     return MappingContext(
-        relevant_formats=relevant_formats,
-        similar_mapping_sets=similar_mappings,
-        relevant_functions=relevant_functions,
+        source_format_query=source_format,
+        target_format_query=target_format,
+        reference_mapping_sets=reference_mapping_sets,
+        format_definitions=format_definitions,
+        relevant_functions=func_results,
         xml_skeleton=xml_skeleton,
     ).model_dump()
