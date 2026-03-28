@@ -113,29 +113,51 @@ Finds the most relevant mapping sets for a query. Returns metadata only (not ful
 ### 7. generate_mapping_context
 Gathers all context needed to generate a new mapping set XML — returns full content of reference mapping sets, format definitions, function docs, and an XML skeleton.
 
-**When to use:** User asks to create, generate, or build a new mapping set. This is the primary tool for mapping set generation.
+**⚠️ CAUTION: This tool can return very large responses that may cause timeouts. Prefer the incremental workflow below instead.**
+
+**When to use:** Only as a fallback if the incremental node-by-node workflow is not suitable. If you do use it, always set `max_content_chars` to `5000` or less to keep responses small.
 
 **Parameters:**
 - `source_format` (required): Source format identifier (e.g. `"SettlementMessageRequestV4"`)
 - `target_format` (required): Target format identifier (e.g. `"pain.001.001.02"`)
 - `description` (optional): Natural language description of what the mapping should do
-- `max_content_chars` (optional, default 50000): Maximum chars per reference file
+- `max_content_chars` (optional, default 50000): **Always set to 5000 or less** to avoid timeout
 
-**Example trigger:** "Generate a mapping from SMRV4 to pain.001 for outbound payments" →
-`generate_mapping_context(source_format="SettlementMessageRequestV4", target_format="pain.001.001.02", description="outbound payment initiation")`
-
-**After calling this tool:** Use the returned context (reference mapping sets, format definitions, function docs, and XML skeleton) to generate the new mapping set XML. Follow the patterns in the reference mapping sets. Use only the functions described in the function documentation.
+**Preferred approach:** Instead of calling this tool, use the incremental workflow:
+1. `find_relevant_mapping_set()` → find references
+2. `get_mapping_set_details()` → study one reference
+3. `search_docs()` + `search_functions()` → gather context per node
+4. Generate mapping rules one node at a time
 
 ---
 
 ## Recommended Tool Workflows
 
 ### "I want to create a new mapping set"
-1. Ask the user for source format, target format, and a description of what it should do
-2. Call `generate_mapping_context()` with those inputs
-3. Study the returned reference mapping sets and function docs
-4. Generate the new mapping set XML following the patterns and structure from the references
-5. Present the XML to the user and explain the key mapping rules
+**IMPORTANT: Work incrementally, one node at a time. Do NOT try to generate the entire mapping set in a single step — large responses will time out.**
+
+1. Ask the user for source format, target format, and a brief description
+2. Call `find_relevant_mapping_set(query="<source> to <target>")` to find reference mapping sets
+3. Call `get_mapping_set_details()` on the best match to study its structure and patterns
+4. Call `search_docs(query="<target_format> schema structure", source_type="format")` to understand the target format's required nodes
+5. Present the user with a list of top-level target nodes that need mapping (e.g. `GroupHeader`, `PaymentInformation`, `CreditTransferTransaction`)
+6. **Map one node at a time:**
+   a. For the current node, call `search_docs()` to find relevant source fields and reference mapping rules
+   b. Call `search_functions()` if you need to look up how a specific function works
+   c. Generate the XML mapping rules for **only that node**
+   d. Present the rules to the user for review/approval
+   e. Move to the next node
+7. After all nodes are done, combine them into the complete mapping set XML with the proper header and skeleton
+8. Present the final assembled XML to the user
+
+**Why incremental:** Each step returns a small, fast response. The user can review and correct mappings as you go, resulting in better quality output.
+
+**Example conversation flow:**
+- Bot: "I found a reference mapping. The target format has these main sections: GroupHeader, PaymentInfo, CreditTransfer. Let me start with GroupHeader."
+- Bot: "Here are the GroupHeader mapping rules: [small XML block]. Look correct? Shall I proceed to PaymentInfo?"
+- User: "Yes, go ahead"
+- Bot: "Here are the PaymentInfo rules: [small XML block]. Next is CreditTransfer."
+- ...and so on until complete
 
 ### "Show me what we have"
 1. Call `list_mapping_sets()` and `list_formats()` in sequence
