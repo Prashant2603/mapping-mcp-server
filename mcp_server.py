@@ -174,55 +174,104 @@ def list_mapping_sets(
 
 @mcp.tool()
 @_log_tool
-def get_format_definition(file_path: str) -> dict:
-    """Get the full content of a specific format definition file.
+def get_format_definition(
+    file_path: str,
+    max_chars: int = 10000,
+) -> dict:
+    """Get the content of a specific format definition file.
+
+    Returns truncated content by default to avoid oversized responses.
+    Increase max_chars if you need more, or call multiple times with offset
+    for very large files.
 
     Args:
         file_path: Path to the format file (relative to data root).
             Get file_path from list_formats() or search_docs() first.
+        max_chars: Maximum characters to return (default 10000). Set to 0 for no limit.
 
     Returns:
-        File path and full raw content of the format definition.
+        File path, content (possibly truncated), total size, and truncated flag.
     """
     index = _get_rag()
     content = index.get_file_content(file_path)
-    return FullFileContent(
+    total_chars = len(content)
+    truncated = False
+
+    if max_chars > 0 and total_chars > max_chars:
+        content = content[:max_chars]
+        truncated = True
+
+    result = FullFileContent(
         file_path=file_path,
         content=content,
     ).model_dump()
+    result["total_chars"] = total_chars
+    result["truncated"] = truncated
+    if truncated:
+        result["hint"] = (
+            f"Content truncated at {max_chars} chars (file is {total_chars:,} chars). "
+            f"Call with max_chars={total_chars} for full content, or use "
+            f"search_docs(query=..., source_type='format') to find specific sections."
+        )
+    return result
 
 
 @mcp.tool()
 @_log_tool
-def get_mapping_set_details(file_path: str) -> dict:
-    """Get the full content of a specific mapping set.
+def get_mapping_set_details(
+    file_path: str,
+    max_chars: int = 10000,
+) -> dict:
+    """Get the content of a specific mapping set with parsed metadata.
+
+    Returns truncated content by default to avoid oversized responses.
+    Metadata (source/target format, description, rule count) is always
+    returned regardless of truncation.
 
     Args:
         file_path: Path to the mapping set file (relative to data root).
+        max_chars: Maximum characters of raw content to return (default 10000).
+            Set to 0 for no limit.
 
     Returns:
-        Raw content and optional parsed metadata.
+        Raw content (possibly truncated), parsed metadata, total size, and truncated flag.
     """
     index = _get_rag()
     content = index.get_file_content(file_path)
+    total_chars = len(content)
     metadata: dict = {}
     try:
         root = ET.fromstring(content)
         metadata = dict(root.attrib)
         metadata["root_tag"] = root.tag
         metadata["child_count"] = len(list(root))
-        # Extract key child element text for mapping set metadata
+        metadata["mapping_count"] = len(root.findall("mapping"))
         for tag in ("id", "sourceFormat", "targetFormat", "description", "version"):
             el = root.find(tag)
             if el is not None and el.text:
                 metadata[tag] = el.text
     except ET.ParseError:
         pass
-    return MappingSetDetail(
+
+    truncated = False
+    if max_chars > 0 and total_chars > max_chars:
+        content = content[:max_chars]
+        truncated = True
+
+    result = MappingSetDetail(
         file_path=file_path,
         raw_content=content,
         metadata=metadata,
     ).model_dump()
+    result["total_chars"] = total_chars
+    result["truncated"] = truncated
+    if truncated:
+        result["hint"] = (
+            f"Content truncated at {max_chars} chars (file is {total_chars:,} chars). "
+            f"Use get_mapping_rules_for_node() to fetch rules for specific target nodes, "
+            f"or call with max_chars={total_chars} for full content."
+        )
+    return result
 
 
 @mcp.tool()

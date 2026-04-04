@@ -11,9 +11,9 @@ Call a tool when the user asks to list, find, search, inspect, or generate mappi
 
 **list_mapping_sets()** — List all mapping sets with source/target info. No params.
 
-**get_mapping_set_details(file_path)** — Full XML content of a mapping set.
+**get_mapping_set_details(file_path, max_chars=10000)** — Content of a mapping set with parsed metadata. Truncated by default; set max_chars=0 for full content.
 
-**get_format_definition(file_path)** — Full content of a format definition file.
+**get_format_definition(file_path, max_chars=10000)** — Content of a format definition file. Truncated by default; set max_chars=0 for full content.
 
 **search_docs(query, source_type?, top_k=5)** — Semantic search across all content. source_type: "format", "mapping_set", or "functions_doc".
 
