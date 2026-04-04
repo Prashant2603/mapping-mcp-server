@@ -81,19 +81,20 @@ echo [OK] Dependencies installed
 :: 4. Install Intel GPU acceleration (optional, auto-detected)
 echo.
 echo Checking for Intel Arc GPU...
-.venv\Scripts\python -c "import torch; assert hasattr(torch,'xpu') and torch.xpu.is_available()" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo [OK] Intel Arc GPU acceleration already available
-    goto :skip_ipex
-)
 wmic path win32_videocontroller get name 2>nul | findstr /i "Arc" >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [INFO] Intel Arc GPU detected, installing acceleration support...
-    .venv\Scripts\pip install intel-extension-for-pytorch --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
+    echo [INFO] Intel Arc GPU detected
+    .venv\Scripts\pip show intel-extension-for-pytorch >nul 2>&1
     if %errorlevel% equ 0 (
-        echo [OK] Intel GPU acceleration installed (embeddings will use GPU)
+        echo [OK] Intel GPU acceleration already installed
     ) else (
-        echo [WARN] Failed to install intel-extension-for-pytorch, will use CPU
+        echo [INFO] Installing intel-extension-for-pytorch...
+        .venv\Scripts\pip install intel-extension-for-pytorch --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
+        if %errorlevel% equ 0 (
+            echo [OK] Intel GPU acceleration installed
+        ) else (
+            echo [WARN] Failed to install intel-extension-for-pytorch, will use CPU
+        )
     )
 ) else (
     echo [SKIP] No Intel Arc GPU detected, using CPU for embeddings
