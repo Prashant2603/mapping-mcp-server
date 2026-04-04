@@ -281,10 +281,13 @@ def search_docs(
     source_type: str | None = None,
     top_k: int = 5,
 ) -> list[dict]:
-    """Semantic search over all indexed content (formats, mapping sets, function docs).
+    """Search indexed content by filename match and semantic similarity.
+
+    First checks if the query matches any filenames in the index, then
+    also runs semantic search. Results from filename matches appear first.
 
     Args:
-        query: Natural language search query.
+        query: Search query (matches filenames and content semantically).
         source_type: Optional filter - one of 'format', 'mapping_set', 'functions_doc'.
         top_k: Number of results to return (default 5).
 
@@ -297,7 +300,7 @@ def search_docs(
             f"Invalid source_type '{source_type}'. Must be one of: {valid_types}"
         )
     index = _get_rag()
-    results = index.search(query, source_type, top_k)
+    results = index.search_hybrid(query, source_type, top_k)
     return [r.model_dump() for r in results]
 
 

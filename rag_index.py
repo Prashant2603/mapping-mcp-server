@@ -279,6 +279,87 @@ class RAGIndex:
             )
         return search_results
 
+    def search_hybrid(
+        self,
+        query: str,
+        source_type: str | None = None,
+        top_k: int | None = None,
+    ) -> list[SearchResult]:
+        """Hybrid search: file-index name lookup + semantic search.
+
+        First checks the file index for files whose name or path contains
+        the query string. If matches are found, fetches their best chunks
+        from ChromaDB. Then runs normal semantic search and merges results,
+        deduplicating by file_path + snippet.
+        """
+        if top_k is None:
+            top_k = self.settings.default_top_k
+
+        # Step 1: Check file index for name/path matches
+        name_results: list[SearchResult] = []
+        query_lower = query.lower()
+        matched_paths = [
+            entry["file_path"]
+            for entry in self._file_index.values()
+            if query_lower in entry.get("name", "").lower()
+            or query_lower in entry.get("file_path", "").lower()
+        ]
+        # Apply source_type filter
+        if source_type:
+            matched_paths = [
+                fp for fp in matched_paths
+                if self._file_index.get(fp, {}).get("source_type") == source_type
+            ]
+
+        if matched_paths:
+            # Fetch chunks from ChromaDB for matched files, rerank them
+            for fp in matched_paths[:top_k]:
+                where = {"file_path": fp}
+                try:
+                    results = self._collection.get(
+                        where=where,
+                        include=["documents", "metadatas"],
+                    )
+                except Exception as e:
+                    logger.error("File chunk lookup failed for %s: %s", fp, e)
+                    continue
+
+                if not results["documents"]:
+                    continue
+
+                docs = results["documents"]
+                metas = results["metadatas"]
+
+                # Rerank chunks against the query
+                reranker = self._get_reranker()
+                pairs = [[query, doc] for doc in docs]
+                scores = reranker.predict(pairs)
+
+                best_idx = int(scores.argmax())
+                name_results.append(
+                    SearchResult(
+                        source_type=metas[best_idx]["source_type"],
+                        file_path=metas[best_idx]["file_path"],
+                        snippet=docs[best_idx],
+                        score=round(float(scores[best_idx]), 4),
+                    )
+                )
+
+        # Step 2: Run normal semantic search
+        semantic_results = self.search(query, source_type, top_k)
+
+        # Step 3: Merge — name matches first, then semantic, deduplicate by file_path
+        seen_files: set[str] = set()
+        merged: list[SearchResult] = []
+        for r in name_results + semantic_results:
+            if r.file_path not in seen_files:
+                merged.append(r)
+                seen_files.add(r.file_path)
+            if len(merged) >= top_k:
+                break
+
+        return merged
+
     def list_files(
         self,
         source_type: str,
@@ -539,16 +620,21 @@ class RAGIndex:
 
         if ext == ".xml":
             if source_type == "mapping_set":
-                return self._chunk_mapping_set_xml(content, base_meta)
-            return self._chunk_xml(content, base_meta)
+                chunks = self._chunk_mapping_set_xml(content, base_meta)
+            else:
+                chunks = self._chunk_xml(content, base_meta)
         elif ext in (".md", ".txt"):
-            return self._chunk_markdown(content, base_meta)
+            chunks = self._chunk_markdown(content, base_meta)
         elif ext == ".csv":
-            return self._chunk_csv(content, base_meta)
+            chunks = self._chunk_csv(content, base_meta)
         elif ext == ".json":
-            return self._chunk_json(content, base_meta)
+            chunks = self._chunk_json(content, base_meta)
         else:
-            return self._chunk_plain(content, base_meta)
+            chunks = self._chunk_plain(content, base_meta)
+
+        # Prepend file path to each chunk so identifier queries (e.g. "MT101") match
+        file_header = f"[File: {rel_path}]\n"
+        return [(file_header + doc, meta) for doc, meta in chunks]
 
     def _chunk_xml(
         self, content: str, base_meta: dict
