@@ -56,6 +56,29 @@ def data_dir(tmp_path):
         "</mappingSet>"
     )
 
+    # Second mapping set — same target, different source (for conflict testing)
+    (mapping_sets / "alt_mapping.xml").write_text(
+        '<?xml version="1.0"?>\n'
+        "<mappingSet>\n"
+        "  <id>FormatC_to_FormatB</id>\n"
+        "  <sourceFormat>FormatC</sourceFormat>\n"
+        "  <targetFormat>FormatB</targetFormat>\n"
+        "  <description>Alternative mapping to FormatB</description>\n"
+        "  <mapping>\n"
+        "    <description>Map order ID using concat</description>\n"
+        "    <target>/purchase/order_number</target>\n"
+        "    <function>concat</function>\n"
+        "    <parameter>value1=$prefix, value2=$source</parameter>\n"
+        "  </mapping>\n"
+        "  <mapping>\n"
+        "    <description>Map order status</description>\n"
+        "    <target>/purchase/status</target>\n"
+        "    <function>substring</function>\n"
+        "    <parameter>input=$source, start=0, length=5</parameter>\n"
+        "  </mapping>\n"
+        "</mappingSet>"
+    )
+
     # Sample function docs
     (functions_docs / "string_functions.md").write_text(
         "# String Functions\n\n"

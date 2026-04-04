@@ -18,7 +18,7 @@ Python MCP server with RAG over a local folder structure containing mapping sets
 - `config.py` — `Settings` dataclass with env var overrides, `SUBFOLDER_MAP` constant mapping subfolder names → source types
 - `models.py` — Pydantic models (`SearchResult`, `FormatInfo`, `MappingSetInfo`, `MappingSetDetail`, `FullFileContent`, `MappingContext`)
 - `rag_index.py` — `RAGIndex` class: indexing (incremental + full), chunking, search, file listing. Largest module.
-- `mcp_server.py` — `FastMCP` instance with 7 registered tools. Module-level `rag` global wired via `init_rag()`
+- `mcp_server.py` — `FastMCP` instance with 11 registered tools. Module-level `rag` global wired via `init_rag()`
 - `main.py` — entrypoint with `argparse`: `--reindex` / `--no-reindex` / `--full-reindex`
 - `copilot_agent_instructions.md` — Copilot Studio agent prompt defining trigger words and tool workflows for the 7 MCP tools
 
@@ -34,14 +34,17 @@ Python MCP server with RAG over a local folder structure containing mapping sets
 2. Groups **mapping rules in batches of 5** with the enriched header prepended
 3. Stores `source_format`, `target_format`, `mapping_functions` in chunk metadata for filtering
 
-### MCP Tools
+### MCP Tools (11)
 - `list_formats(extension?)` — list format files
 - `list_mapping_sets()` — list mapping sets with source/target info parsed from XML
 - `get_mapping_set_details(file_path)` — raw content + metadata
+- `get_format_definition(file_path)` — full content of a format definition file
 - `search_docs(query, source_type?, top_k=5)` — semantic search, optional filter
 - `search_functions(query, top_k=5)` — search function docs only
-- `find_relevant_mapping_set(query, top_k=3)` — lightweight discovery returning metadata only. Internally over-fetches `top_k * 3` chunks then deduplicates by file path
-- `generate_mapping_context(source_format, target_format, description?, max_content_chars=50000)` — returns **full file content** of reference mapping sets + format definitions + function doc snippets
+- `find_relevant_mapping_set(query, top_k=3)` — lightweight discovery returning metadata only
+- `list_target_nodes(target_format, source_format?)` — lists all target paths from reference mapping sets, grouped by top-level node, with conflict detection
+- `get_mapping_rules_for_node(target_node, target_format, source_format?)` — returns existing mapping rules for a target node from all matching reference mapping sets, with conflict flags when references disagree
+- `generate_mapping_context(source_format, target_format, description?, page=1, max_content_chars=50000)` — **paginated** context bundle (legacy; prefer `list_target_nodes` + `get_mapping_rules_for_node` for incremental workflow)
 
 ## Development
 
@@ -90,6 +93,8 @@ cat /tmp/mcp-server.log
 - `CHUNK_MAX_CHARS` (default: `1500`)
 - `COLLECTION_NAME` (default: `mcp_rag`)
 - `DEFAULT_TOP_K` (default: `5`)
+- `RERANKER_MODEL` (default: `cross-encoder/ms-marco-MiniLM-L-6-v2`)
+- `RERANK_OVERSAMPLE` (default: `4`) — multiplier for how many candidates to fetch before reranking
 
 If you change the embedding model, delete `./vector_store` and re-index.
 

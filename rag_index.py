@@ -12,6 +12,7 @@ from pathlib import Path
 
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from sentence_transformers import CrossEncoder
 
 from config import SUBFOLDER_MAP, Settings
 from models import SearchResult
@@ -19,6 +20,7 @@ from models import SearchResult
 logger = logging.getLogger(__name__)
 
 MANIFEST_FILENAME = "file_manifest.json"
+FILE_INDEX_FILENAME = "file_index.json"
 
 
 class RAGIndex:
@@ -37,6 +39,138 @@ class RAGIndex:
             embedding_function=self._ef,
             metadata={"hnsw:space": "cosine"},
         )
+        self._reranker: CrossEncoder | None = None
+        self._file_index: dict[str, dict] = self._load_file_index()
+
+    def _get_reranker(self) -> CrossEncoder:
+        """Lazy-load the cross-encoder reranker model."""
+        if self._reranker is None:
+            logger.info("Loading reranker model: %s", self.settings.reranker_model)
+            self._reranker = CrossEncoder(self.settings.reranker_model)
+        return self._reranker
+
+    # -- File index (in-memory metadata catalog) --
+
+    def _file_index_path(self) -> Path:
+        return self._vector_store_dir / FILE_INDEX_FILENAME
+
+    def _load_file_index(self) -> dict[str, dict]:
+        """Load the file metadata index from disk."""
+        p = self._file_index_path()
+        if p.is_file():
+            try:
+                return json.loads(p.read_text())
+            except (json.JSONDecodeError, OSError):
+                logger.warning("Corrupt file index, treating as empty")
+        return {}
+
+    def _save_file_index(self) -> None:
+        """Persist the file metadata index to disk."""
+        self._vector_store_dir.mkdir(parents=True, exist_ok=True)
+        self._file_index_path().write_text(json.dumps(self._file_index, indent=2))
+
+    def _extract_file_metadata(self, file_path: Path, source_type: str) -> dict:
+        """Extract searchable metadata from a file for the index.
+
+        Returns a dict with keys: source_type, name, extension, and
+        type-specific fields (source_format, target_format, id, description
+        for mapping sets; short_description for formats).
+        """
+        rel_path = str(file_path.relative_to(self.data_root))
+        ext = file_path.suffix.lower()
+        meta = {
+            "source_type": source_type,
+            "name": file_path.stem,
+            "extension": ext,
+            "file_path": rel_path,
+        }
+
+        try:
+            content = file_path.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            return meta
+
+        if ext == ".xml" and source_type == "mapping_set":
+            try:
+                root = ET.fromstring(content)
+                meta["source_format"] = (
+                    root.findtext("sourceFormat")
+                    or root.attrib.get("source", "")
+                ).strip()
+                meta["target_format"] = (
+                    root.findtext("targetFormat")
+                    or root.attrib.get("target", "")
+                ).strip()
+                meta["id"] = (root.findtext("id") or "").strip()
+                meta["description"] = (
+                    root.findtext("description")
+                    or root.attrib.get("name", "")
+                ).strip()
+                # Count mapping rules
+                meta["rule_count"] = len(root.findall("mapping"))
+            except ET.ParseError:
+                pass
+        elif source_type == "format":
+            meta["short_description"] = content[:200].replace("\n", " ").strip()
+
+        return meta
+
+    def _rebuild_file_index(self, files: list[tuple[Path, str]]) -> None:
+        """Build the file index from scratch for the given files."""
+        self._file_index = {}
+        for file_path, source_type in files:
+            rel_path = str(file_path.relative_to(self.data_root))
+            self._file_index[rel_path] = self._extract_file_metadata(
+                file_path, source_type
+            )
+        self._save_file_index()
+        logger.info("File index built with %d entries", len(self._file_index))
+
+    def _update_file_index(
+        self,
+        added_or_changed: list[tuple[Path, str]],
+        removed: set[str],
+    ) -> None:
+        """Incrementally update the file index."""
+        for rel_path in removed:
+            self._file_index.pop(rel_path, None)
+        for file_path, source_type in added_or_changed:
+            rel_path = str(file_path.relative_to(self.data_root))
+            self._file_index[rel_path] = self._extract_file_metadata(
+                file_path, source_type
+            )
+        self._save_file_index()
+
+    def lookup(
+        self,
+        source_type: str | None = None,
+        extension: str | None = None,
+        source_format: str | None = None,
+        target_format: str | None = None,
+    ) -> list[dict]:
+        """Fast exact-match lookup against the in-memory file index.
+
+        All filter parameters are optional and combined with AND logic.
+        String matching is case-insensitive.
+        """
+        results: list[dict] = []
+        for entry in self._file_index.values():
+            if source_type and entry.get("source_type") != source_type:
+                continue
+            if extension:
+                ext = extension if extension.startswith(".") else f".{extension}"
+                if entry.get("extension") != ext:
+                    continue
+            if source_format:
+                val = entry.get("source_format", "")
+                if source_format.lower() not in val.lower():
+                    continue
+            if target_format:
+                val = entry.get("target_format", "")
+                if target_format.lower() not in val.lower():
+                    continue
+            results.append(entry)
+        return results
 
     def collection_count(self) -> int:
         """Return the number of chunks in the vector store."""
@@ -50,8 +184,10 @@ class RAGIndex:
             embedding_function=self._ef,
             metadata={"hnsw:space": "cosine"},
         )
-        # Clear the manifest
+        # Clear the manifest and file index
         self._save_manifest({})
+        self._file_index = {}
+        self._save_file_index()
 
     def index_all(self, incremental: bool = True) -> int:
         """Scan data directories, chunk files, and upsert into ChromaDB.
@@ -79,7 +215,10 @@ class RAGIndex:
         top_k: int | None = None,
         where_filter: dict | None = None,
     ) -> list[SearchResult]:
-        """Semantic search over indexed content.
+        """Semantic search over indexed content with cross-encoder reranking.
+
+        Over-fetches candidates from ChromaDB, then reranks with a cross-encoder
+        for higher relevance accuracy.
 
         Args:
             query: Natural language search query.
@@ -90,6 +229,9 @@ class RAGIndex:
         if top_k is None:
             top_k = self.settings.default_top_k
 
+        # Over-fetch candidates for reranking
+        fetch_k = top_k * self.settings.rerank_oversample
+
         where = where_filter
         if source_type and not where_filter:
             where = {"source_type": source_type}
@@ -99,7 +241,7 @@ class RAGIndex:
         try:
             results = self._collection.query(
                 query_texts=[query],
-                n_results=top_k,
+                n_results=fetch_k,
                 where=where,
                 include=["documents", "metadatas", "distances"],
             )
@@ -107,21 +249,34 @@ class RAGIndex:
             logger.error("Search failed: %s", e)
             return []
 
+        if not results["documents"] or not results["documents"][0]:
+            return []
+
+        docs = results["documents"][0]
+        metas = results["metadatas"][0]
+
+        # Rerank with cross-encoder
+        reranker = self._get_reranker()
+        pairs = [[query, doc] for doc in docs]
+        rerank_scores = reranker.predict(pairs)
+
+        # Sort by rerank score descending, take top_k
+        scored = sorted(
+            zip(docs, metas, rerank_scores),
+            key=lambda x: x[2],
+            reverse=True,
+        )[:top_k]
+
         search_results: list[SearchResult] = []
-        if results["documents"] and results["documents"][0]:
-            for doc, meta, dist in zip(
-                results["documents"][0],
-                results["metadatas"][0],
-                results["distances"][0],
-            ):
-                search_results.append(
-                    SearchResult(
-                        source_type=meta["source_type"],
-                        file_path=meta["file_path"],
-                        snippet=doc,
-                        score=round(1.0 - dist, 4),  # cosine distance to similarity
-                    )
+        for doc, meta, score in scored:
+            search_results.append(
+                SearchResult(
+                    source_type=meta["source_type"],
+                    file_path=meta["file_path"],
+                    snippet=doc,
+                    score=round(float(score), 4),
                 )
+            )
         return search_results
 
     def list_files(
@@ -129,35 +284,19 @@ class RAGIndex:
         source_type: str,
         extension: str | None = None,
     ) -> list[dict]:
-        """List unique files of a given source type.
+        """List unique files of a given source type from the in-memory index.
 
         Returns list of dicts with name, file_path, extension keys.
         """
-        where: dict = {"source_type": source_type}
-        if extension:
-            ext = extension if extension.startswith(".") else f".{extension}"
-            where = {"$and": [{"source_type": source_type}, {"extension": ext}]}
-
-        try:
-            results = self._collection.get(where=where, include=["metadatas"])
-        except Exception as e:
-            logger.error("list_files failed: %s", e)
-            return []
-
-        seen: set[str] = set()
-        files: list[dict] = []
-        for meta in results["metadatas"]:
-            fp = meta["file_path"]
-            if fp not in seen:
-                seen.add(fp)
-                files.append(
-                    {
-                        "name": Path(fp).stem,
-                        "file_path": fp,
-                        "extension": meta["extension"],
-                    }
-                )
-        return files
+        entries = self.lookup(source_type=source_type, extension=extension)
+        return [
+            {
+                "name": e["name"],
+                "file_path": e["file_path"],
+                "extension": e["extension"],
+            }
+            for e in entries
+        ]
 
     def get_file_content(self, file_path: str) -> str:
         """Read raw file content from disk with path traversal validation."""
@@ -210,6 +349,11 @@ class RAGIndex:
 
     def _index_incremental(self, files: list[tuple[Path, str]]) -> int:
         """Index only new/changed files, remove deleted files."""
+        # If the file index is missing/empty, rebuild it from all files
+        if not self._file_index and files:
+            logger.info("File index missing, rebuilding from %d files", len(files))
+            self._rebuild_file_index(files)
+
         manifest = self._load_manifest()
         current_files: dict[str, tuple[Path, str]] = {}
 
@@ -252,9 +396,11 @@ class RAGIndex:
         to_process = new_files + changed_files
         if not to_process:
             logger.info("No files to index, everything up to date")
-            # Still update manifest to remove deleted entries
+            # Still update manifest and file index to remove deleted entries
             new_manifest = {k: v for k, v in manifest.items() if k not in removed}
             self._save_manifest(new_manifest)
+            if removed:
+                self._update_file_index([], removed)
             return 0
 
         all_ids, all_docs, all_metas = self._chunk_files_with_logging(to_process)
@@ -273,6 +419,9 @@ class RAGIndex:
                 "chunk_count": chunk_count,
             }
         self._save_manifest(new_manifest)
+
+        # Update file index
+        self._update_file_index(to_process, removed)
 
         logger.info("Indexed %d chunks from %d files", len(all_ids), len(to_process))
         return len(all_ids)
@@ -295,6 +444,9 @@ class RAGIndex:
                 "chunk_count": chunk_count,
             }
         self._save_manifest(manifest)
+
+        # Build fresh file index
+        self._rebuild_file_index(files)
 
         logger.info("Indexed %d chunks from %d files", len(all_ids), len(files))
         return len(all_ids)

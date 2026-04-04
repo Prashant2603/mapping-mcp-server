@@ -39,6 +39,14 @@ class Settings:
     chunk_max_chars: int = field(
         default_factory=lambda: int(os.environ.get("CHUNK_MAX_CHARS", "1500"))
     )
+    reranker_model: str = field(
+        default_factory=lambda: os.environ.get(
+            "RERANKER_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2"
+        )
+    )
+    rerank_oversample: int = field(
+        default_factory=lambda: int(os.environ.get("RERANK_OVERSAMPLE", "4"))
+    )
 
 
 settings = Settings()
