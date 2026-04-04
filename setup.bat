@@ -78,17 +78,40 @@ if exist "%USERPROFILE%\.local\bin\uv.exe" (
 )
 echo [OK] Dependencies installed
 
-:: 4. Create data directories
+:: 4. Install Intel GPU acceleration (optional, auto-detected)
+echo.
+echo Checking for Intel Arc GPU...
+.venv\Scripts\python -c "import torch; assert hasattr(torch,'xpu') and torch.xpu.is_available()" >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [OK] Intel Arc GPU acceleration already available
+    goto :skip_ipex
+)
+wmic path win32_videocontroller get name 2>nul | findstr /i "Arc" >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [INFO] Intel Arc GPU detected, installing acceleration support...
+    .venv\Scripts\pip install intel-extension-for-pytorch
+    if %errorlevel% equ 0 (
+        echo [OK] Intel GPU acceleration installed (embeddings will use GPU)
+    ) else (
+        echo [WARN] Failed to install intel-extension-for-pytorch, will use CPU
+    )
+) else (
+    echo [SKIP] No Intel Arc GPU detected, using CPU for embeddings
+)
+:skip_ipex
+
+:: 5. Create data directories
 echo.
 if not exist "data\formats" mkdir data\formats
 if not exist "data\mapping_sets" mkdir data\mapping_sets
 if not exist "data\functions_docs" mkdir data\functions_docs
 echo [OK] Data directories ready
 
-:: 5. Verify
+:: 6. Verify
 echo.
 echo Verifying installation...
 .venv\Scripts\python -c "import mcp; print(f'  mcp: {mcp.__version__}'); import chromadb; print(f'  chromadb: {chromadb.__version__}'); import pydantic; print(f'  pydantic: {pydantic.__version__}'); print('  All imports OK')"
+.venv\Scripts\python -c "from rag_index import _detect_device; d=_detect_device(); print(f'  Embedding device: {d}')"
 echo [OK] Setup complete!
 
 echo.

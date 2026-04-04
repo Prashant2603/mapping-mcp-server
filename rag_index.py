@@ -12,7 +12,7 @@ from pathlib import Path
 
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-from sentence_transformers import CrossEncoder
+from sentence_transformers import CrossEncoder, SentenceTransformer
 
 from config import SUBFOLDER_MAP, Settings
 from models import SearchResult
@@ -23,6 +23,19 @@ MANIFEST_FILENAME = "file_manifest.json"
 FILE_INDEX_FILENAME = "file_index.json"
 
 
+def _detect_device() -> str:
+    """Detect best available compute device: xpu (Intel Arc) > cuda > cpu."""
+    try:
+        import torch
+        if hasattr(torch, "xpu") and torch.xpu.is_available():
+            return "xpu"
+        if torch.cuda.is_available():
+            return "cuda"
+    except ImportError:
+        pass
+    return "cpu"
+
+
 class RAGIndex:
     """Indexes files into ChromaDB and provides semantic search."""
 
@@ -31,6 +44,7 @@ class RAGIndex:
         self.data_root = Path(settings.data_root_dir).resolve()
         self._vector_store_dir = Path(settings.vector_store_dir)
         self._client = chromadb.PersistentClient(path=settings.vector_store_dir)
+        # ChromaDB embedding function for query-time (CPU, single queries)
         self._ef = SentenceTransformerEmbeddingFunction(
             model_name=settings.embedding_model
         )
@@ -39,6 +53,12 @@ class RAGIndex:
             embedding_function=self._ef,
             metadata={"hnsw:space": "cosine"},
         )
+        # Direct SentenceTransformer for batch embedding (uses GPU if available)
+        self._device = _detect_device()
+        self._embedder = SentenceTransformer(
+            settings.embedding_model, device=self._device
+        )
+        logger.info("Embedding device: %s", self._device)
         self._reranker: CrossEncoder | None = None
         self._file_index: dict[str, dict] = self._load_file_index()
 
@@ -570,9 +590,15 @@ class RAGIndex:
         all_metas: list[dict],
     ) -> None:
         """Pre-compute embeddings in one batch, then upsert to ChromaDB."""
-        logger.info("Computing embeddings for %d chunks...", len(all_docs))
+        logger.info(
+            "Computing embeddings for %d chunks on %s...",
+            len(all_docs), self._device,
+        )
         t0 = time.time()
-        all_embeddings = self._ef(all_docs)
+        embeddings_array = self._embedder.encode(
+            all_docs, show_progress_bar=True, batch_size=256,
+        )
+        all_embeddings = embeddings_array.tolist()
         elapsed = time.time() - t0
         logger.info("Embeddings computed in %.1fs", elapsed)
 
