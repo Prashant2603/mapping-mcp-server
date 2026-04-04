@@ -81,7 +81,7 @@ echo [OK] Dependencies installed
 :: 4. Install Intel GPU acceleration (optional, auto-detected)
 echo.
 echo Checking for Intel Arc GPU...
-wmic path win32_videocontroller get name 2>nul | findstr /i "Arc" >nul 2>&1
+powershell -NoProfile -Command "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name" 2>nul | findstr /i "Arc" >nul 2>&1
 if %errorlevel% equ 0 (
     echo [INFO] Intel Arc GPU detected
     .venv\Scripts\pip show intel-extension-for-pytorch >nul 2>&1
