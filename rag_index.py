@@ -147,6 +147,7 @@ class RAGIndex:
         extension: str | None = None,
         source_format: str | None = None,
         target_format: str | None = None,
+        name_filter: str | None = None,
     ) -> list[dict]:
         """Fast exact-match lookup against the in-memory file index.
 
@@ -168,6 +169,12 @@ class RAGIndex:
             if target_format:
                 val = entry.get("target_format", "")
                 if target_format.lower() not in val.lower():
+                    continue
+            if name_filter:
+                name = entry.get("name", "")
+                path = entry.get("file_path", "")
+                if (name_filter.lower() not in name.lower()
+                        and name_filter.lower() not in path.lower()):
                     continue
             results.append(entry)
         return results

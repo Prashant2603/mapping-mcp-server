@@ -98,6 +98,7 @@ def _parse_mapping_set_metadata(content: str) -> dict:
 @_log_tool
 def list_formats(
     extension: str | None = None,
+    name_filter: str | None = None,
     top_k: int = 50,
     offset: int = 0,
 ) -> dict:
@@ -105,6 +106,8 @@ def list_formats(
 
     Args:
         extension: Optional filter by file extension (e.g. "xml", "csv", "json").
+        name_filter: Optional filter by filename or path (case-insensitive substring match,
+            e.g. "MT101", "pain.001", "swift").
         top_k: Maximum number of results to return (default 50).
         offset: Number of results to skip for pagination (default 0).
 
@@ -112,7 +115,7 @@ def list_formats(
         Dict with items (list of format files), total count, offset, and has_more flag.
     """
     index = _get_rag()
-    entries = index.lookup(source_type="format", extension=extension)
+    entries = index.lookup(source_type="format", extension=extension, name_filter=name_filter)
     total = len(entries)
     page = entries[offset : offset + top_k]
     return {
@@ -134,12 +137,14 @@ def list_formats(
 @mcp.tool()
 @_log_tool
 def list_mapping_sets(
+    name_filter: str | None = None,
     top_k: int = 50,
     offset: int = 0,
 ) -> dict:
     """List mapping sets with source/target info, paginated.
 
     Args:
+        name_filter: Optional filter by filename or path (case-insensitive substring match).
         top_k: Maximum number of results to return (default 50).
         offset: Number of results to skip for pagination (default 0).
 
@@ -147,7 +152,7 @@ def list_mapping_sets(
         Dict with items (list of mapping sets), total count, offset, and has_more flag.
     """
     index = _get_rag()
-    entries = index.lookup(source_type="mapping_set")
+    entries = index.lookup(source_type="mapping_set", name_filter=name_filter)
     total = len(entries)
     page = entries[offset : offset + top_k]
     items: list[dict] = []
