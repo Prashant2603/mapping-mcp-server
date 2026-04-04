@@ -96,45 +96,67 @@ def _parse_mapping_set_metadata(content: str) -> dict:
 
 @mcp.tool()
 @_log_tool
-def list_formats(extension: str | None = None) -> list[dict]:
-    """List all known format files with basic info.
+def list_formats(
+    extension: str | None = None,
+    top_k: int = 50,
+    offset: int = 0,
+) -> dict:
+    """List format files with basic info, paginated.
 
     Args:
         extension: Optional filter by file extension (e.g. "xml", "csv", "json").
+        top_k: Maximum number of results to return (default 50).
+        offset: Number of results to skip for pagination (default 0).
 
     Returns:
-        List of format files with name, file_path, extension, and short_description.
+        Dict with items (list of format files), total count, offset, and has_more flag.
     """
     index = _get_rag()
     entries = index.lookup(source_type="format", extension=extension)
-    return [
-        FormatInfo(
-            name=e["name"],
-            file_path=e["file_path"],
-            extension=e["extension"],
-            short_description=e.get("short_description", ""),
-        ).model_dump()
-        for e in entries
-    ]
+    total = len(entries)
+    page = entries[offset : offset + top_k]
+    return {
+        "items": [
+            FormatInfo(
+                name=e["name"],
+                file_path=e["file_path"],
+                extension=e["extension"],
+                short_description="",
+            ).model_dump()
+            for e in page
+        ],
+        "total": total,
+        "offset": offset,
+        "has_more": offset + top_k < total,
+    }
 
 
 @mcp.tool()
 @_log_tool
-def list_mapping_sets() -> list[dict]:
-    """List all available mapping sets with source/target info.
+def list_mapping_sets(
+    top_k: int = 50,
+    offset: int = 0,
+) -> dict:
+    """List mapping sets with source/target info, paginated.
+
+    Args:
+        top_k: Maximum number of results to return (default 50).
+        offset: Number of results to skip for pagination (default 0).
 
     Returns:
-        List of mapping sets with name, file_path, source_target_info, and summary.
+        Dict with items (list of mapping sets), total count, offset, and has_more flag.
     """
     index = _get_rag()
     entries = index.lookup(source_type="mapping_set")
-    results: list[dict] = []
-    for e in entries:
+    total = len(entries)
+    page = entries[offset : offset + top_k]
+    items: list[dict] = []
+    for e in page:
         src = e.get("source_format", "")
         tgt = e.get("target_format", "")
         source_target = f"{src} -> {tgt}" if src or tgt else ""
         summary = e.get("description", "") or e.get("id", "")
-        results.append(
+        items.append(
             MappingSetInfo(
                 name=e["name"],
                 file_path=e["file_path"],
@@ -142,7 +164,12 @@ def list_mapping_sets() -> list[dict]:
                 summary=summary,
             ).model_dump()
         )
-    return results
+    return {
+        "items": items,
+        "total": total,
+        "offset": offset,
+        "has_more": offset + top_k < total,
+    }
 
 
 @mcp.tool()

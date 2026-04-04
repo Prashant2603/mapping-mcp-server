@@ -25,27 +25,40 @@ def _setup_rag(rag_index):
 
 def test_list_formats():
     result = list_formats()
-    assert isinstance(result, list)
-    assert len(result) >= 1
-    for item in result:
+    assert "items" in result
+    assert "total" in result
+    assert "has_more" in result
+    assert len(result["items"]) >= 1
+    for item in result["items"]:
         assert "name" in item
         assert "file_path" in item
         assert "extension" in item
-        assert "short_description" in item
 
 
 def test_list_formats_filter_xml():
     result = list_formats(extension="xml")
-    assert len(result) >= 1
-    for item in result:
+    assert len(result["items"]) >= 1
+    for item in result["items"]:
         assert item["extension"] == ".xml"
+
+
+def test_list_formats_pagination():
+    result = list_formats(top_k=1, offset=0)
+    assert len(result["items"]) == 1
+    assert result["total"] >= 2  # we have xml + csv format files
+    assert result["has_more"] is True
+
+    result2 = list_formats(top_k=1, offset=1)
+    assert len(result2["items"]) == 1
+    assert result2["offset"] == 1
 
 
 def test_list_mapping_sets():
     result = list_mapping_sets()
-    assert isinstance(result, list)
-    assert len(result) >= 1
-    for item in result:
+    assert "items" in result
+    assert "total" in result
+    assert len(result["items"]) >= 1
+    for item in result["items"]:
         assert "name" in item
         assert "file_path" in item
         assert "source_target_info" in item
@@ -53,8 +66,7 @@ def test_list_mapping_sets():
 
 def test_list_mapping_sets_source_target():
     result = list_mapping_sets()
-    # Find the FormatA -> FormatB mapping (order is not guaranteed)
-    source_targets = [m["source_target_info"] for m in result]
+    source_targets = [m["source_target_info"] for m in result["items"]]
     assert any("FormatA" in st and "FormatB" in st for st in source_targets)
 
 
