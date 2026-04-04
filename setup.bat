@@ -89,7 +89,7 @@ if %errorlevel% equ 0 (
 wmic path win32_videocontroller get name 2>nul | findstr /i "Arc" >nul 2>&1
 if %errorlevel% equ 0 (
     echo [INFO] Intel Arc GPU detected, installing acceleration support...
-    .venv\Scripts\pip install intel-extension-for-pytorch
+    .venv\Scripts\pip install intel-extension-for-pytorch --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
     if %errorlevel% equ 0 (
         echo [OK] Intel GPU acceleration installed (embeddings will use GPU)
     ) else (
